@@ -1,0 +1,70 @@
+{
+  <conditional_jmp_ld>
+  Memcheck:Cond
+  ...
+  obj:/lib64/ld-2.12.so
+  ...
+}
+{
+  <__gf_malloc>
+  Memcheck:Leak
+  ...
+  fun:__gf_malloc
+  ...
+}
+{
+  <__gf_calloc>
+  Memcheck:Leak
+  ...
+  fun:__gf_calloc
+  ...
+}
+{
+  <__xlator_init>
+  Memcheck:Leak
+  ...
+  fun:__xlator_init
+  ...
+}
+{
+  <xlator_init>
+  Memcheck:Leak
+  ...
+  fun:xlator_init
+  ...
+}
+{
+  <gf_thread_create>
+  Memcheck:Leak
+  ...
+  fun:gf_thread_create
+  ...
+}
+{
+  <socket_connect>
+  Memcheck:Leak
+  ...
+  fun:socket_connect
+  ...
+}
+{
+  <event_dispatch>
+  Memcheck:Leak
+  ...
+  fun:event_dispatch
+  ...
+}
+{
+  <rb_malloc>
+  Memcheck:Leak
+  ...
+  fun:rb_malloc
+  ...
+}
+{
+  <dht_munge_name>
+  Memcheck:Leak
+  ...
+  fun:dht_munge_name
+  ...
+}

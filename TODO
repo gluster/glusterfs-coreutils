@@ -1,0 +1,5 @@
+* [BUG] Fix and/or refactor test harness
+* [BUG] Fix local client logging
+* [FEATURE] Add recursive copying to gfcp
+* [FEATURE] Implement gfmv
+* [FEATURE] Add configurable buffer sizes

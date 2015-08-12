@@ -1,0 +1,57 @@
+Summary:          Core Utilities for the Gluster Distributed File System
+Name:             @PACKAGE_NAME@
+Version:          @PACKAGE_VERSION@
+Release:          @PACKAGE_RELEASE@
+Vendor:           Gluster Community
+License:          GPLv3
+Group:            System Environment/Base
+BuildRequires:    glusterfs-api-devel >= 3.6.0
+BuildRequires:    libtirpc-devel >= 0.2.4
+BuildRequires:    help2man >= 1.36
+Requires:         glusterfs-api >= 3.6.0
+Requires:         libtirpc >= 0.2.4
+URL:              http://www.gluster.org/docs/index.php/GlusterFS
+Source0:          @PACKAGE_NAME@-@PACKAGE_VERSION@.tar.gz
+
+%description
+gluster-coreutils provides a set of basic utilities such as cat, mkdir, ls, and
+tail that are implemented specifically using the GlusterFS API.
+
+%prep
+rm -rf %{_topdir}/BUILD/*
+
+%setup
+
+%build
+%configure
+make
+
+%install
+make DESTDIR=${RPM_BUILD_ROOT} install
+
+for i in gfcat gfcp gfmkdir gfls gfrm gfstat gftail; do
+        ln -fs %{_bindir}/gfcli ${RPM_BUILD_ROOT}%{_bindir}/$i
+done
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%files
+%{_bindir}/gfcat
+%{_bindir}/gfcli
+%{_bindir}/gfcp
+%{_bindir}/gfls
+%{_bindir}/gfmkdir
+%{_bindir}/gfput
+%{_bindir}/gfrm
+%{_bindir}/gfstat
+%{_bindir}/gftail
+/usr/share/man/man1/gfcat.1.gz
+/usr/share/man/man1/gfcli.1.gz
+/usr/share/man/man1/gfcp.1.gz
+/usr/share/man/man1/gfls.1.gz
+/usr/share/man/man1/gfmkdir.1.gz
+/usr/share/man/man1/gfput.1.gz
+/usr/share/man/man1/gfrm.1.gz
+/usr/share/man/man1/gfstat.1.gz
+/usr/share/man/man1/gftail.1.gz

@@ -1,0 +1,65 @@
+ESC="\x1B["
+RESET=0
+RESET_UNDERLINE=24
+RESET_REVERSE=27
+DEFAULT=39
+DEFAULTB=49
+
+BOLD=1
+BRIGHT=2
+UNDERSCORE=4
+REVERSE=7
+
+BLACK=30
+RED=31
+GREEN=32
+BROWN=33
+BLUE=34
+MAGENTA=35
+CYAN=36
+WHITE=37
+
+BLACK_BG=40
+RED_BG=41
+GREEN_BG=42
+BROWN_BG=43
+BLUE_BG=44
+MAGENTA_BG=45
+CYAN_BG=46
+WHITE_BG=47
+
+function log() {
+  printf "${ESC}$1m$2${ESC}${RESET}m";
+}
+
+function debug() {
+  log "$BLUE" "$@";
+}
+
+function info() {
+  log "$MAGENTA" "$@";
+}
+
+function warn() {
+  log "$BROWN" "WARNING: $@";
+}
+
+function error() {
+  log "$RED" "ERROR: $@";
+}
+
+function highlight() {
+  log $CYAN "$1";
+}
+
+function success() {
+  log "$GREEN" "$@";
+}
+
+function pass() {
+  printf "."
+}
+
+function fail() {
+  log "$RED" ".";
+}

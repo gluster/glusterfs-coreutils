@@ -1,0 +1,4 @@
+[submodule "gnulib"]
+	path = gnulib
+	url = git://git.savannah.gnu.org/gnulib.git
+        ignore = dirty
