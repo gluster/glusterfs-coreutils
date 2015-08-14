@@ -22,6 +22,10 @@ Building requires a few dependencies:
 
 `$ ./configure && make`
 
+### RPM
+
+`$ make rpms`
+
 ## License
 
 Copyright (C) 2015 Facebook, Inc.
