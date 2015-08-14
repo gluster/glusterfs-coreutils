@@ -516,7 +516,7 @@ do_tail_without_context ()
 
         ret = gluster_getfs (&fs, state->gluster_url);
         if (ret == -1) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto out;
         }
 

@@ -55,14 +55,14 @@ gluster_get (glfs_t *fs, const char *filename) {
 
         fd = glfs_open (fs, filename, O_RDONLY);
         if (fd == NULL) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto out;
         }
 
         // don't allow concurrent reads and writes.
         ret = gluster_lock (fd, F_WRLCK);
         if (ret == -1) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto out;
         }
 
@@ -239,7 +239,7 @@ cat_without_context ()
 
         ret = gluster_getfs (&fs, state->gluster_url);
         if (ret == -1) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto out;
         }
 
