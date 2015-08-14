@@ -314,13 +314,13 @@ ls_dir (glfs_t *fs, char *path, char *pattern, void (*print_func)(const char *, 
 
         ret = glfs_lstat (fs, path, &stat);
         if (ret == -1) {
-                error (0, errno, path);
+                error (0, errno, "%s", path);
                 goto out;
         }
 
         fd = glfs_opendir (fs, path);
         if (fd == NULL) {
-                error (0, errno, path);
+                error (0, errno, "%s", path);
                 goto out;
         }
 

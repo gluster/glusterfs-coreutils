@@ -282,7 +282,7 @@ main (int argc, char *argv[])
 
         ret = gluster_getfs (&fs, state->gluster_url);
         if (ret == -1) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto err;
         }
 
@@ -303,7 +303,7 @@ main (int argc, char *argv[])
 
         ret = gluster_put (fs, state);
         if (ret == -1) {
-                error (0, errno, state->url);
+                error (0, errno, "%s", state->url);
                 goto err;
         }
 

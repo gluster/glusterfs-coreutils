@@ -523,7 +523,7 @@ local_to_remote (const char *local_path, const char *remote_path, glfs_t *fs)
 
         fd = open (local_path, O_RDONLY);
         if (fd == -1) {
-                error (0, errno, local_path);
+                error (0, errno, "%s", local_path);
                 goto out;
         }
 
@@ -605,13 +605,13 @@ remote_to_local (const char *remote_path, const char *local_path, glfs_t *fs)
 
         remote_fd = glfs_open (fs, remote_path, O_RDONLY);
         if (remote_fd == NULL) {
-                error (0, errno, remote_path);
+                error (0, errno, "%s", remote_path);
                 goto out;
         }
 
         local_fd = open (full_path, O_CREAT | O_WRONLY, get_default_file_mode_perm ());
         if (local_fd == -1) {
-                error (0, errno, full_path);
+                error (0, errno, "%s", full_path);
                 goto out;
         }
 
@@ -670,13 +670,13 @@ remote_to_remote (const char *source_path, const char *dest_path, glfs_t *source
 
         source_fd = glfs_open (source_fs, source_path, O_RDONLY);
         if (source_fd == NULL) {
-                error (0, errno, source_path);
+                error (0, errno, "%s", source_path);
                 goto out;
         }
 
         dest_fd = glfs_creat (dest_fs, full_path, O_CREAT | O_WRONLY, get_default_file_mode_perm ());
         if (dest_fd == NULL) {
-                error (0, errno, full_path);
+                error (0, errno, "%s", full_path);
                 goto out;
         }
 
@@ -729,7 +729,7 @@ cp_without_context ()
                 case LOCAL_TO_REMOTE:
                         ret = gluster_getfs (&dest_fs, state->gluster_dest);
                         if (ret == -1) {
-                                error (0, errno, state->dest);
+                                error (0, errno, "%s", state->dest);
                                 goto out;
                         }
 
@@ -750,7 +750,7 @@ cp_without_context ()
                 case REMOTE_TO_LOCAL:
                         ret = gluster_getfs (&source_fs, state->gluster_source);
                         if (ret == -1) {
-                                error (0, errno, state->source);
+                                error (0, errno, "%s", state->source);
                                 goto out;
                         }
 
@@ -771,7 +771,7 @@ cp_without_context ()
                 case REMOTE_TO_REMOTE:
                         ret = gluster_getfs (&dest_fs, state->gluster_dest);
                         if (ret == -1) {
-                                error (0, errno, state->dest);
+                                error (0, errno, "%s", state->dest);
                                 goto out;
                         }
 
@@ -792,7 +792,7 @@ cp_without_context ()
                         } else {
                                 ret = gluster_getfs (&source_fs, state->gluster_source);
                                 if (ret == -1) {
-                                        error (0, errno, state->source);
+                                        error (0, errno, "%s", state->source);
                                         goto out;
                                 }
 
@@ -848,7 +848,7 @@ cp_with_context (glfs_t *fs)
                 case ESTABLISHED_TO_REMOTE:
                         ret = gluster_getfs (&dest_fs, state->gluster_dest);
                         if (ret == -1) {
-                                error (0, errno, state->dest);
+                                error (0, errno, "%s", state->dest);
                                 goto out;
                         }
 
@@ -868,7 +868,7 @@ cp_with_context (glfs_t *fs)
                 case REMOTE_TO_ESTABLISHED:
                         ret = gluster_getfs (&source_fs, state->gluster_source);
                         if (ret == -1) {
-                                error (0, errno, state->source);
+                                error (0, errno, "%s", state->source);
                                 goto out;
                         }
 
