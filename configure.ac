@@ -34,8 +34,7 @@ AC_PROG_LN_S
 AC_PROG_EGREP
 
 # Dependencies
-AC_CHECK_HEADER([glusterfs/api/glfs.h],,[AC_MSG_ERROR([cannot find glusterfs api headers])])
-PKG_CHECK_MODULES([GLFS], [glusterfs-api >= 3])
+PKG_CHECK_MODULES([GLFS], [glusterfs-api >= 3],,[AC_MSG_ERROR([cannot find glusterfs api headers])])
 PKG_CHECK_MODULES([TIRPC], [libtirpc >= 0.2.1])
 
 AC_CHECK_PROG([HAVE_HELP2MAN],[help2man],[yes],[no])
