@@ -6,10 +6,8 @@ Vendor:           Gluster Community
 License:          GPLv3
 Group:            System Environment/Base
 BuildRequires:    glusterfs-api-devel >= 3.6.0
-BuildRequires:    libtirpc-devel >= 0.2.4
 BuildRequires:    help2man >= 1.36
 Requires:         glusterfs-api >= 3.6.0
-Requires:         libtirpc >= 0.2.4
 URL:              http://www.gluster.org/docs/index.php/GlusterFS
 Source0:          @PACKAGE_NAME@-@PACKAGE_VERSION@.tar.gz
 

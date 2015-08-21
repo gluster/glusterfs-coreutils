@@ -38,8 +38,8 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-util.c
 
 __top_builddir__build_bin_gfcli_CFLAGS = $(GLFS_CFLAGS)
-__top_builddir__build_bin_gfcli_LDADD = $(LDADD) $(GLFS_LIBS) $(TIRPC_LIBS)
+__top_builddir__build_bin_gfcli_LDADD = $(LDADD) $(GLFS_LIBS)
 
 __top_builddir__build_bin_gfput_SOURCES = glfs-put.c glfs-util.c
 __top_builddir__build_bin_gfput_CFLAGS = $(GLFS_CFLAGS)
-__top_builddir__build_bin_gfput_LDADD = $(LDADD) $(GLFS_LIBS) $(TIRPC_LIBS)
+__top_builddir__build_bin_gfput_LDADD = $(LDADD) $(GLFS_LIBS)
