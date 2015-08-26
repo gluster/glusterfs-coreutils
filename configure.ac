@@ -35,7 +35,6 @@ AC_PROG_EGREP
 
 # Dependencies
 PKG_CHECK_MODULES([GLFS], [glusterfs-api >= 3],,[AC_MSG_ERROR([cannot find glusterfs api headers])])
-PKG_CHECK_MODULES([TIRPC], [libtirpc >= 0.2.1])
 
 AC_CHECK_PROG([HAVE_HELP2MAN],[help2man],[yes],[no])
 AM_CONDITIONAL([HAVE_HELP2MAN], [test "x$HAVE_HELP2MAN" = xyes])
