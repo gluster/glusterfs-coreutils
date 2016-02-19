@@ -315,7 +315,7 @@ out:
 
 // type is either F_RDLCK or F_WRLCK.
 int
-gluster_lock (glfs_fd_t *fd, short type) {
+gluster_lock (glfs_fd_t *fd, short type, bool block) {
     struct flock flck = {
         .l_type = type,
         .l_whence = SEEK_SET,
@@ -323,7 +323,7 @@ gluster_lock (glfs_fd_t *fd, short type) {
         .l_len = 0,  // lock entire file
     };
 
-    return glfs_posix_lock (fd, F_SETLK, &flck);
+    return glfs_posix_lock (fd, block ? F_SETLKW : F_SETLK, &flck);
 }
 
 int

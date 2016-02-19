@@ -17,6 +17,7 @@ EXTRA_DIST = glfs-cat.h \
 	     glfs-cp.h \
 	     glfs-cli-commands.h \
 	     glfs-cli.h \
+	     glfs-flock.h \
 	     glfs-ls.h \
 	     glfs-mkdir.h \
 	     glfs-rm.h \
@@ -29,6 +30,7 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-cli-commands.c \
 					  glfs-cat.c \
 					  glfs-cp.c \
+					  glfs-flock.c \
 					  glfs-ls.c \
 					  glfs-mkdir.c \
 					  glfs-rm.c \

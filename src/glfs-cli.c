@@ -22,6 +22,7 @@
 #include "glfs-cat.h"
 #include "glfs-cp.h"
 #include "glfs-cli-commands.h"
+#include "glfs-flock.h"
 #include "glfs-ls.h"
 #include "glfs-mkdir.h"
 #include "glfs-rm.h"
@@ -55,12 +56,13 @@ shell_usage ()
                 "* quit\n"
                 "* rm\n"
                 "* stat\n"
-                "* tail\n");
+                "* tail\n"
+                "* flock\n");
 
         return 0;
 }
 
-#define NUM_CMDS 12
+#define NUM_CMDS 13
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -74,7 +76,8 @@ static struct cmd const cmds[] =
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
-        { .alias = "gftail", .name = "tail", .execute = do_tail }
+        { .alias = "gftail", .name = "tail", .execute = do_tail },
+        { .name = "flock", .execute = do_flock }
 };
 
 static const struct cmd*
@@ -314,8 +317,11 @@ parse_options (struct cli_context *ctx)
 void
 cleanup ()
 {
+        struct fd_list *cur, *ptr = NULL;
+
         if (ctx->url) {
                 gluster_url_free (ctx->url);
+                ctx->url = NULL;
         }
 
         if (ctx->options) {
@@ -323,8 +329,27 @@ cleanup ()
                 free (ctx->options);
         }
 
+        /* Traverse fd_list and cleanup each entry.*/
+        ptr = ctx->flist;
+        while (ptr) {
+                if (ptr->fd) {
+                        glfs_close (ptr->fd);
+                        ptr->fd = NULL;
+                }
+
+                if (ptr->path) {
+                        free (ptr->path);
+                        ptr->path = NULL;
+                }
+
+                cur = ptr;
+                ptr = ptr->next;
+                free (cur);
+        }
+
         if (ctx->fs) {
                 glfs_fini (ctx->fs);
+                ctx->fs = NULL;
         }
 
         free (ctx);
@@ -361,6 +386,7 @@ main (int argc, char *argv[])
         ctx->argv = argv;
         ctx->conn_str = NULL;
         ctx->fs = NULL;
+        ctx->flist = NULL;
         ctx->options = malloc (sizeof (*(ctx->options)));
         if (ctx->options == NULL) {
                 error (EXIT_FAILURE, errno, "failed to initialize options");

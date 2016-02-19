@@ -547,7 +547,7 @@ local_to_remote (const char *local_path, const char *remote_path, glfs_t *fs)
                 goto out;
         }
 
-        ret = gluster_lock (remote_fd, F_WRLCK);
+        ret = gluster_lock (remote_fd, F_WRLCK, false);
         if (ret == -1) {
                 error (0, errno, "failed to lock %s", full_path);
                 goto out;
@@ -615,7 +615,7 @@ remote_to_local (const char *remote_path, const char *local_path, glfs_t *fs)
                 goto out;
         }
 
-        ret = gluster_lock (remote_fd, F_WRLCK);
+        ret = gluster_lock (remote_fd, F_WRLCK, false);
         if (ret == -1) {
                 error (0, errno, "failed to lock %s", remote_path);
                 goto out;

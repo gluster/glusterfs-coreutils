@@ -127,8 +127,27 @@ int
 cli_disconnect (struct cli_context *ctx)
 {
         int ret = 0;
+        struct fd_list *cur, *ptr = NULL;
 
         free_xlator_options (&ctx->options->xlator_options);
+
+        /* Traverse fd_list and cleanup each entry.*/
+        ptr = ctx->flist;
+        while (ptr) {
+                if (ptr->fd) {
+                        glfs_close (ptr->fd);
+                        ptr->fd = NULL;
+                }
+
+                if (ptr->path) {
+                        free (ptr->path);
+                        ptr->path = NULL;
+                }
+
+                cur = ptr;
+                ptr = ptr->next;
+                free (cur);
+        }
 
         if (ctx->fs) {
                 // FIXME: Memory leak occurs here in GFS >= 3.6. Test with 3.7

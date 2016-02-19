@@ -60,7 +60,7 @@ gluster_get (glfs_t *fs, const char *filename) {
         }
 
         // don't allow concurrent reads and writes.
-        ret = gluster_lock (fd, F_WRLCK);
+        ret = gluster_lock (fd, F_WRLCK, false);
         if (ret == -1) {
                 error (0, errno, "%s", state->url);
                 goto out;

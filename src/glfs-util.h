@@ -9,6 +9,7 @@
 
 #include <glusterfs/api/glfs.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 struct gluster_url {
         char *host;
@@ -53,7 +54,7 @@ int
 gluster_create_path (glfs_t *fs, char *path, mode_t omode);
 
 int
-gluster_lock (glfs_fd_t *fd, short type);
+gluster_lock (glfs_fd_t *fd, short type, bool block);
 
 int
 gluster_write (int src, glfs_fd_t *fd);

@@ -230,7 +230,7 @@ gluster_put (glfs_t *fs, struct state *state)
                 goto out;
         }
 
-        ret = gluster_lock (fd, F_WRLCK);
+        ret = gluster_lock (fd, F_WRLCK, false);
         if (ret == -1) {
                 goto out;
         }
