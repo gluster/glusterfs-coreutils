@@ -214,6 +214,7 @@ start_shell ()
         }
 
 out:
+        printf ("\n");
         free (line);
         return ret;
 }
@@ -390,8 +391,6 @@ main (int argc, char *argv[])
                 if (ctx->options->debug) {
                         print_xlator_options (&ctx->options->xlator_options);
                 }
-
-                ret = start_shell ();
         }
 
         cleanup ();
