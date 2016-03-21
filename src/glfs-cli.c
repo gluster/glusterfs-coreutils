@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include "glfs-cli.h"
 #include "glfs-cat.h"
@@ -96,22 +98,6 @@ get_cmd (char *name)
         return cmd;
 }
 
-/**
- * Trim white space characters from the end of a null terminated string.
- */
-static void
-trim (char *str)
-{
-        size_t len = strlen (str);
-        for (size_t i = len - 1; i >= 0; i--) {
-                if (isspace (str[i])) {
-                        str[i] = '\0';
-                } else {
-                        break;
-                }
-        }
-}
-
 static int
 split_str (char *line, char **argv[])
 {
@@ -157,68 +143,74 @@ static int
 start_shell ()
 {
         int ret = 0;
-        char *line = NULL;
-        char *pos = NULL;
+        char *input = NULL;
+        char *prompt = NULL;
         char *token;
         size_t size;
         const struct cmd *cmd;
 
-        while (true) {
-                // getline () indicates that passing a NULL char* will cause
-                // an allocation on the caller's behalf. Therefore, we need to
-                // free line and reset it to NULL every time before calling
-                // getline ().
-                free (line);
-                line = NULL;
+        using_history ();
 
+        while (true) {
                 if (ctx->conn_str) {
-                        printf ("gfcli %s> ", ctx->conn_str);
+                        size = sizeof (char) * (9 + strlen (ctx->conn_str));
+                        prompt = malloc (size);
+
+                        ret = snprintf (prompt,
+                                        size,
+                                        "gfcli %s> ",
+                                        ctx->conn_str);
+
                 } else {
-                        printf ("gfcli> ");
+                        prompt = malloc (sizeof (char) * 8);
+
+                        ret = sprintf(prompt, "gfcli> ");
                 }
 
-                ret = 0;
-                if (getline (&line, &size, stdin) == -1) {
-                        ret = -1;
+                if (ret == -1 || prompt == NULL) {
+                        error (EXIT_FAILURE, errno, "allocation error");
+                }
+
+                input = readline (prompt);
+
+                // readline () encountered EOF, so exit cleanly
+                if (input == NULL) {
+                        ret = EXIT_SUCCESS;
                         goto out;
                 }
 
-                if (*line == '\n') {
+                if (*input == '\0') {
                         continue;
                 }
 
-                char *line_copy = strdup (line);
-                if (line_copy == NULL) {
-                        error (0, errno, "strdup");
+                add_history (input);
+
+                ctx->argc = split_str (input, &ctx->argv);
+                if (ctx->argc == 0) {
                         goto out;
                 }
 
-                token = strtok_r (line_copy, " ", &pos);
-                trim (token);
-                cmd = get_cmd (token);
+                cmd = get_cmd (ctx->argv[0]);
 
                 if (cmd) {
-                        ctx->argc = split_str (line, &ctx->argv);
-                        if (ctx->argc == 0) {
-                                goto out;
-                        }
-
                         program_invocation_name = ctx->argv[0];
                         ret = cmd->execute (ctx);
-                        free (ctx->argv);
-                        ctx->argv = NULL;
                 } else {
                         fprintf (stderr,
-                                "Unknown command '%s'. Type 'help' for more.\n",
-                                token);
+                                 "Unknown command '%s'. "
+                                 "Type 'help' for more.\n",
+                                 ctx->argv[0]);
                 }
 
-                free (line_copy);
+                free (prompt);
+                free (input);
+                free (ctx->argv);
+                ctx->argv = NULL;
         }
 
 out:
         printf ("\n");
-        free (line);
+        free (input);
         return ret;
 }
 
