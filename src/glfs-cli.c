@@ -253,6 +253,10 @@ parse_options (struct cli_context *ctx)
         int option_index = 0;
         struct xlator_option *option;
 
+        // Ignore unknown options in order to allow them to be passed
+        // through to the underlying utility or cli-specific command.
+        opterr = 0;
+
         while (true) {
                 opt = getopt_long (argc, argv, "o:", long_options,
                                 &option_index);
@@ -288,6 +292,8 @@ parse_options (struct cli_context *ctx)
                                                 LICENSE,
                                                 AUTHORS);
                                 exit (EXIT_SUCCESS);
+                        case '?':
+                                break;
                         case 'x':
                                 usage ();
                         default:
