@@ -27,10 +27,6 @@ make
 %install
 make DESTDIR=${RPM_BUILD_ROOT} install
 
-for i in gfcat gfcp gfmkdir gfls gfrm gfstat gftail; do
-        ln -fs %{_bindir}/gfcli ${RPM_BUILD_ROOT}%{_bindir}/$i
-done
-
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 

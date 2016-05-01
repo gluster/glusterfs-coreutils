@@ -5,14 +5,13 @@ SUBDIRS = lib src man
 EXTRA_DIST = m4/gnulib-cache.m4
 
 install-exec-local:
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfcat
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfcp
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfls
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfmkdir
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfmv
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfrm
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gfstat
-	$(LN_S) -f $(DESTDIR)$(bindir)/gfcli gftail
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfcat
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfcp
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfls
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfmkdir
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfrm
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfstat
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftail
 
 rpms:	prep
 	QA_RPATHS=17 rpmbuild --define '_topdir $(abs_top_builddir)/build/rpmbuild' \
