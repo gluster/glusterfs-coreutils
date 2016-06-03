@@ -159,7 +159,6 @@ start_shell ()
         int ret = 0;
         char *input = NULL;
         char *prompt = NULL;
-        char *token;
         size_t size;
         const struct cmd *cmd;
 
