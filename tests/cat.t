@@ -1,19 +1,8 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gfcat"
-USAGE_ERROR=$"gfcat: missing operand
-gfcat: Try --help for more information."
-USAGE="Usage: gfcat [OPTION]... URL
-Read a file on a remote Gluster volume and write it to standard output.
-
-  -p, --port=PORT	specify the port on which to connect
-      --help     display this help and exit
-      --version  output version information and exit
-
-Examples:
-  gfcat glfs://localhost/groot/path/to/file
-	Write the contents of /path/to/file on the Gluster volume
-	of groot on host localhost to standard output."
+USAGE_ERROR="gfcat: missing operand"
+USAGE="Usage: gfcat [OPTION]... URL"
 
 setup() {
         TEST_CAT_DIR=$(mktemp -d --tmpdir="$GLUSTER_MOUNT_DIR$ROOT_DIR")
@@ -28,14 +17,14 @@ teardown() {
         run $CMD
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE_ERROR" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
         [ "$status" -eq 0 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "invalid port flag" {
@@ -49,49 +38,49 @@ teardown() {
         run $CMD "glfs://"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://: Invalid argument" ]
+        [[ "$output" =~ "gfcat: glfs://: Invalid argument" ]]
 }
 
 @test "uri with host" {
         run $CMD "glfs://host"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://host: Invalid argument" ]
+        [[ "$output" =~ "gfcat: glfs://host: Invalid argument" ]]
 }
 
 @test "uri with host trailing slash" {
         run $CMD "glfs://host/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://host/: Invalid argument" ]
+        [[ "$output" =~ "gfcat: glfs://host/: Invalid argument" ]]
 }
 
 @test "uri with host and empty volume" {
         run $CMD "glfs://host//"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://host//: Invalid argument" ]
+        [[ "$output" =~ "gfcat: glfs://host//: Invalid argument" ]]
 }
 
 @test "uri with host and volume" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME: Is a directory" ]]
 }
 
 @test "uri with host and volume with trailing slash" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME/"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME/: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME/: Is a directory" ]]
 }
 
 @test "uri with host, volume, and empty path" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME//"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME//: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME//: Is a directory" ]]
 }
 
 @test "cat small file" {
@@ -115,20 +104,20 @@ teardown() {
 @test "cat directory" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR: Is a directory" ]]
 }
 
 @test "cat with host that does not exist" {
         run $CMD "glfs://host/volume/file"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://host/volume/file: Transport endpoint is not connected" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://host/volume/file: Transport endpoint is not connected" ]]
 }
 
 @test "cat file that does not exist" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file";
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file: No such file or directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file: No such file or directory" ]]
 }
