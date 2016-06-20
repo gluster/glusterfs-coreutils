@@ -230,7 +230,7 @@ out:
 static struct option const long_options[] =
 {
         {"debug", no_argument, NULL, 'd'},
-        {"help", no_argument, NULL, 'x'},
+        {"help", no_argument, NULL, 'h'},
         {"version", no_argument, NULL, 'v'},
         {"xlator-option", required_argument, NULL, 'o'},
         {NULL, no_argument, NULL, 0}
@@ -271,7 +271,7 @@ parse_options (struct cli_context *ctx)
         opterr = 0;
 
         while (true) {
-                opt = getopt_long (argc, argv, "o:", long_options,
+                opt = getopt_long (argc, argv, "ho:", long_options,
                                 &option_index);
 
                 if (opt == -1) {
@@ -307,8 +307,6 @@ parse_options (struct cli_context *ctx)
                                 exit (EXIT_SUCCESS);
                         case '?':
                                 break;
-                        case 'x':
-                                usage ();
                         default:
                                 error (EXIT_FAILURE, 0, "Try --help for more information.");
                 }

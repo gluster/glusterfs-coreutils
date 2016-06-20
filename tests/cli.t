@@ -1,49 +1,55 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gfcli"
-USAGE="Usage: gfcli [-p|--port PORT] [-h|--help] [-v|--version] [glfs://<host>/<volume>]"
+URL="glfs://$HOST/$GLUSTER_VOLUME"
+USAGE="Usage: gfcli [OPTION]... [URL]"
 
 @test "short help flag" {
         run $CMD "-h"
 
         [ "$status" -eq 0 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
         [ "$status" -eq 0 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "quit" {
-        echo "quit" | $CMD
+        run bash -c "echo \"quit\" | $CMD"
 
-        [ "$?" -eq 0 ]
+        [ "$status" -eq 0 ]
+        [ "$output" == "gfcli> quit" ]
 }
 
 @test "connect without disconnect" {
-        echo -e "connect glfs://$HOST/$GLUSTER_VOLUME\nquit" | $CMD
+        run bash -c "echo -e \"connect $URL\nquit\" | $CMD"
 
-        [ "$?" -eq 0 ]
+        [ "$status" -eq 0 ]
+        [[ "$output" = `echo -e "gfcli> connect $URL\ngfcli \($HOST/$GLUSTER_VOLUME\)> quit"` ]]
 }
 
 @test "disconnect without connect" {
-        echo -e "disconnect\nquit" | $CMD
+        run bash -c "echo -e \"disconnect\nquit\" | $CMD"
 
-        [ "$?" -eq 0 ]
+        [ "$status" -eq 0 ]
+        [[ "$output" = `echo -e "gfcli> disconnect\ngfcli> quit"` ]]
 }
 
 @test "connect followed by disconnect" {
-        echo -e "connect glfs://$HOST/$GLUSTER_VOLUME\ndisconnect\nquit" | $CMD
+        run bash -c "echo -e \"connect glfs://$HOST/$GLUSTER_VOLUME\ndisconnect\nquit\" | $CMD"
 
-        [ $? -eq 0 ]
+        [ "$status" -eq 0 ]
+        [[ "$output" = `echo -e "gfcli> connect $URL\ngfcli \($HOST/$GLUSTER_VOLUME\)> disconnect\ngfcli> quit"` ]]
 }
 
 @test "connect, disconnect, connect, quit" {
-        URL="glfs://$HOST/$GLUSTER_VOLUME"
-        echo -e "connect $URL\ndisconnect\nconnect $URL\nquit" | $CMD
+        run bash -c "echo -e \"connect $URL\ndisconnect\nconnect $URL\nquit\" | $CMD"
 
-        [ $? -eq 0 ]
+        echo $output > /tmp/output
+        [ "$status" -eq 0 ]
+        [[ "$output" = `echo -e "gfcli> connect $URL\ngfcli \($HOST/$GLUSTER_VOLUME\)> disconnect\ngfcli> connect $URL\ngfcli \($HOST/$GLUSTER_VOLUME\)> quit"` ]]
 }
