@@ -133,7 +133,7 @@ parse_options (int argc, char *argv[], bool has_connection)
         // Reset getopt since other utilities may have called it already.
         optind = 0;
         while (true) {
-                opt = getopt_long (argc, argv, "dho:p:", long_options,
+                opt = getopt_long (argc, argv, "do:p:", long_options,
                                    &option_index);
 
                 if (opt == -1) {
