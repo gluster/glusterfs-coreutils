@@ -55,7 +55,7 @@ static struct state *state;
 static struct option const long_options[] =
 {
         {"exclusive", no_argument, NULL, 'e'},
-        {"help", no_argument, NULL, 'h'},
+        {"help", no_argument, NULL, 'x'},
         {"nonblock", no_argument, NULL, 'n'},
         {"shared", no_argument, NULL, 's'},
         {"unlock", no_argument, NULL, 'u'},
@@ -69,7 +69,7 @@ usage ()
         printf ("Usage: %s [OPTION]... URL\n"
                 "Request a full file advisory lock on files from a remote Gluster volume.\n\n"
                 "  -e, --exclusive              Obtain an exclusive lock. This is the default.\n"
-                "  -h, --help                   Display this help and exit.\n"
+                "      --help                   Display this help and exit.\n"
                 "  -n, --nonblock               Fail rather than wait if the lock cannot be immediately acquired.\n"
                 "  -s, --shared                 Obtain a shared lock.\n"
                 "  -u, --unlock                 Drop  a  lock.\n"
@@ -90,7 +90,7 @@ parse_options (int argc, char *argv[])
 
         optind = 0;
         while (true) {
-                opt = getopt_long (argc, argv, "ehnsuv", long_options,
+                opt = getopt_long (argc, argv, "ensuv", long_options,
                                    &option_index);
 
                 if (opt == -1) {
@@ -120,7 +120,7 @@ parse_options (int argc, char *argv[])
                                         AUTHORS);
                                 ret = -2;
                                 goto out;
-                        case 'h':
+                        case 'x':
                                 usage ();
                                 ret = -2;
                                 goto out;
