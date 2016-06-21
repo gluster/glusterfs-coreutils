@@ -1,75 +1,71 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gfstat"
-USAGE="Usage: gfstat [-L|--deference] [-p|--port PORT] [-h|--help] [-v|--version] glfs://<host>/<volume>/<path>"
+USAGE="Usage: gfstat [OPTION]... URL"
+USAGE_ERROR="gfstat: missing operand"
 
 @test "no arguments" {
         run $CMD
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
-}
-
-@test "short help flag" {
-        run $CMD "-h"
-
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "uri only" {
         run $CMD "glfs://"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfstat: glfs://: Invalid argument" ]]
 }
 
 @test "uri with host" {
         run $CMD "glfs://host"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfstat: glfs://host: Invalid argument" ]]
 }
 
 @test "uri with host trailing slash" {
         run $CMD "glfs://host/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfstat: glfs://host/: Invalid argument" ]]
 }
 
 @test "uri with host and empty volume" {
         run $CMD "glfs://host//"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfstat: glfs://host//: Invalid argument" ]]
 }
 
 @test "uri with host and volume" {
-        run $CMD "glfs://host/volume"
+        run $CMD "glfs://$HOST/$GLUSTER_VOLUME"
+        echo $output > /tmp/output
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "File: \`/'" ]]
 }
 
 @test "uri with host and volume with trailing slash" {
-        run $CMD "glfs://host/volume/"
+        run $CMD "glfs://$HOST/$GLUSTER_VOLUME/"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "File: \`/'" ]]
 }
 
 @test "stat file" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_FILE_SMALL"
 
         [ "$status" -eq 0 ]
+        [[ "$output" =~ "File: \`$ROOT_DIR/$TEST_FILE_SMALL'" ]]
 }
 
 @test "stat non-existant path" {
