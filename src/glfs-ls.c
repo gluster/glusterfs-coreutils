@@ -459,6 +459,7 @@ ls (glfs_t *fs, char *path)
         if (pattern && strchr (pattern, '*') == NULL) {
                 if (glfs_stat (fs, path, &statbuf)) {
                         error (0, errno, "failed to access %s", state->url);
+                        ret = -1;
                         goto out;
                 }
 
@@ -467,7 +468,6 @@ ls (glfs_t *fs, char *path)
                 pattern = basename (path);
                 real_path = dirname (real_path);
         }
-
 
         if (state->long_form) {
                 ls_dir (fs, real_path, pattern, print_long);
