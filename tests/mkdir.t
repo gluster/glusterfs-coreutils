@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gfmkdir"
-USAGE="Usage: gfmkdir [-r|--parents] [-p|--port PORT] [-h|--help] [-v|--version] glfs://<host>/<volume>/<path>"
+USAGE="Usage: gfmkdir [OPTION]... URL"
+USAGE_ERROR="gfmkdir: missing operand"
 
 teardown() {
         rm -rf "$GLUSTER_MOUNT_DIR$ROOT_DIR/test_dir"
@@ -11,21 +12,14 @@ teardown() {
         run $CMD
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
-}
-
-@test "short help flag" {
-        run $CMD "-h"
-
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "invalid port flag" {
@@ -39,28 +33,29 @@ teardown() {
         run $CMD "glfs://"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfmkdir: glfs://: Invalid argument" ]]
 }
 
 @test "uri with host" {
         run $CMD "glfs://host"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfmkdir: glfs://host: Invalid argument" ]]
 }
 
 @test "uri with host trailing slash" {
         run $CMD "glfs://host/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfmkdir: glfs://host/: Invalid argument" ]]
 }
+
 
 @test "uri with host and empty volume" {
         run $CMD "glfs://host//"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gfmkdir: glfs://host//: Invalid argument" ]]
 }
 
 @test "uri with host and volume" {
@@ -86,12 +81,14 @@ teardown() {
 
 @test "mkdir directory that does not exist" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/test_dir"
+        [ -d "$GLUSTER_MOUNT_DIR$ROOT_DIR/test_dir" ] && status=0
 
         [ "$status" -eq 0 ]
 }
 
 @test "mkdir directory that does not exist with parents flag" {
         run $CMD "-r" "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/test_dir"
+        [ -d "$GLUSTER_MOUNT_DIR$ROOT_DIR/test_dir" ] && status=0
 
         [ "$status" -eq 0 ]
 }
@@ -105,6 +102,7 @@ teardown() {
 
 @test "mkdir nested directory that does not exist with parents flag" {
         run $CMD "-r" "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/first_level/second_level"
+        [ -d "$GLUSTER_MOUNT_DIR$ROOT_DIR/first_level/second_level" ] && status=0
 
         [ "$status" -eq 0 ]
 }

@@ -104,7 +104,7 @@ parse_options (int argc, char *argv[], bool has_connection)
         // Reset getopt since other utilities may have called it already.
         optind = 0;
         while (true) {
-                opt = getopt_long (argc, argv, "do:p:rvx", long_options,
+                opt = getopt_long (argc, argv, "do:p:rv", long_options,
                                    &option_index);
 
                 if (opt == -1) {
@@ -131,7 +131,7 @@ parse_options (int argc, char *argv[], bool has_connection)
                         case 'p':
                                 port = strtoport (optarg);
                                 if (port == 0) {
-                                        goto err;
+                                        goto out;
                                 }
 
                                 break;
