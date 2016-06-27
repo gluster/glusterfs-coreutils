@@ -572,7 +572,7 @@ do_tail (struct cli_context *ctx)
         state = init_state ();
         if (state == NULL) {
                 error (0, errno, "failed to initialize state");
-                goto err;
+                goto out;
         }
 
         if (ctx->fs) {
@@ -598,11 +598,6 @@ do_tail (struct cli_context *ctx)
                 ret = do_tail_without_context ();
         }
 
-        ret = EXIT_SUCCESS;
-        goto out;
-
-err:
-        ret = EXIT_FAILURE;
 out:
         if (state) {
                 gluster_url_free (state->gluster_url);

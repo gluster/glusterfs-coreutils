@@ -1,28 +1,22 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gftail"
-USAGE="Usage: gftail [-c|--bytes BYTES] [-f|--follow] [-n|--lines] [-s|--sleep-interval INTERVAL] [-p|--port PORT] [-h|--help] [-v|--version] glfs://<host>/<volume>/<path>"
+USAGE="Usage: gftail [OPTION]... URL"
+USAGE_ERROR="gftail: missing operand"
 BASE_URL="glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR"
 
 @test "no arguments" {
         run $CMD
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
-}
-
-@test "short help flag" {
-        run $CMD "-h"
-
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "invalid bytes parameter - negative int" {
@@ -57,42 +51,43 @@ BASE_URL="glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR"
         run $CMD "glfs://"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gftail: glfs://: Invalid argument" ]]
 }
 
 @test "uri with host" {
         run $CMD "glfs://host"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gftail: glfs://host: Invalid argument" ]]
 }
 
 @test "uri with host trailing slash" {
         run $CMD "glfs://host/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gftail: glfs://host/: Invalid argument" ]]
 }
 
 @test "uri with host and empty volume" {
         run $CMD "glfs://host//"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "gftail: glfs://host//: Invalid argument" ]]
 }
 
 @test "uri with host and volume" {
         run $CMD "glfs://host/volume"
+        echo $output > /tmp/output
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$output" == "gftail: glfs://host/volume: Transport endpoint is not connected" ]
 }
 
 @test "uri with host and volume with trailing slash" {
         run $CMD "glfs://host/volume/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$output" == "gftail: glfs://host/volume/: Transport endpoint is not connected" ]
 }
 
 @test "tail file" {
@@ -120,7 +115,6 @@ BASE_URL="glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR"
         run $CMD "-n0" "$BASE_URL/$TEST_FILE_SMALL"
 
         [ "$status" -eq 0 ]
-        [ "$output" == "" ]
 }
 
 @test "tail one line" {
