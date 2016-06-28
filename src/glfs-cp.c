@@ -825,6 +825,11 @@ cp_without_context ()
                                 goto out;
                         }
 
+                        if (dest_fs == source_fs) {
+                                glfs_fini (dest_fs);
+                                dest_fs = source_fs = NULL;
+                        }
+
                         break;
                 default:
                         error (0, errno, "unknown error");

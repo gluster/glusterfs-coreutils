@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
 
 CMD="$CMD_PREFIX $BUILD_DIR/bin/gfcp"
-USAGE="Usage: gfcp [-r|--recursive] [-p|--port PORT] [-h|--help] [-v|--version] [SOURCE] [DEST]"
+USAGE="Usage: gfcp [OPTION]... SOURCE DEST"
+USAGE_ERROR="gfcp: missing operand"
 
 setup() {
         TEMP_FILE=$(mktemp)
@@ -16,21 +17,14 @@ teardown() {
         run $CMD
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
-}
-
-@test "short help flag" {
-        run $CMD "-h"
-
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "long help flag" {
         run $CMD "--help"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [ "$status" -eq 0 ]
+        [[ "$output" =~ "$USAGE" ]]
 }
 
 @test "invalid port flag" {
@@ -44,56 +38,56 @@ teardown() {
         run $CMD "glfs://"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "source uri with host" {
         run $CMD "glfs://host"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "source uri with host trailing slash" {
         run $CMD "glfs://host/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "source uri with host and empty volume" {
         run $CMD "glfs://host//"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "source uri with host and volume" {
         run $CMD "glfs://host/volume"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "source uri with host and volume with trailing slash" {
         run $CMD "glfs://host/volume/"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "$USAGE" ]
+        [[ "$output" =~ "$USAGE_ERROR" ]]
 }
 
 @test "cp the same source and destination" {
         run $CMD "path" "path"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcp: source and destination are the same: Invalid argument" ]
+        [[ "$output" =~ "gfcp: source and destination are the same: Invalid argument" ]]
 }
 
 @test "cp local path to local path" {
         run $CMD "$GLUSTER_BRICK_DIR$ROOT_DIR/$TEST_FILE_SMALL" "test"
 
         [ "$status" -eq 1 ]
-        [ "$output" == "gfcp: local source and destination: Invalid argument" ]
+        [[ "$output" =~ "gfcp: local source and destination: Invalid argument" ]]
 }
 
 @test "cp small local file to remote destination" {
