@@ -27,6 +27,7 @@ set -u
 DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 GLUSTER_DAEMON_NOT_RUNNING=true
 GLUSTER_DAEMON_PID=-1
+with_valgrind="no"
 
 export BUILD_DIR="$DIR/build"
 export CLI="gluster --mode=script --wignore"
@@ -174,7 +175,10 @@ function generate_data() {
 function run_tests() {
         highlight "==> Executing tests\n"
 
-        CMD_PREFIX="$VALGRIND"
+        if [ $with_valgrind == "yes" ]; then
+                CMD_PREFIX="$VALGRIND"
+        fi
+
         prove -rf --timer tests
 }
 
@@ -250,6 +254,16 @@ function cleanup_test_environment() {
 }
 
 function main() {
+        args=`getopt g "$@"`
+        set -- $args
+        while [ $# -gt 0 ]; do
+                case "$1" in
+                        -g)     with_valgrind="yes" ;;
+                        --)     shift; break ;;
+                esac
+                shift
+        done
+
         check_root
         check_environment
 
@@ -264,4 +278,4 @@ function main() {
         fi
 }
 
-main
+main "$@"
