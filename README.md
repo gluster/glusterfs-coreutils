@@ -1,4 +1,4 @@
-# gluster-coreutils
+# gluster-coreutils [![Build Status](https://ci.centos.org/view/Gluster/job/gluster_coreutils/badge/icon)](https://ci.centos.org/view/Gluster/job/gluster_coreutils/)
 
 The GlusterFS Coreutils is a suite of utilities that aims to mimic the standard
 Linux coreutils, with the exception that it utilizes the gluster C API in order
