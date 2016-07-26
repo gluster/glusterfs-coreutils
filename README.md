@@ -11,7 +11,7 @@ Building requires a few dependencies:
 1. `glusterfs-api-devel`
 1. `help2man`
 1. `autoconf >= 2.69`
-1. `automake >= 1.15`
+1. `automake >= 1.13.2`
 
 ### Git
 
