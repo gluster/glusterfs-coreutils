@@ -10,7 +10,7 @@ AC_SUBST([PACKAGE_RELEASE], 1)
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([glusterfs-coreutils.spec Makefile lib/Makefile src/Makefile man/Makefile])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.15 foreign -Wall -Werror tar-ustar])
+AM_INIT_AUTOMAKE([1.13.2 foreign -Wall -Werror tar-ustar])
 AM_MAINTAINER_MODE
 
 AC_DEFINE([COPYRIGHT], ["Copyright (C) 2015 Facebook, Inc."], [Copyright notice])
