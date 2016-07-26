@@ -32,7 +32,7 @@ with_valgrind="no"
 export BUILD_DIR="$DIR/build"
 export CLI="gluster --mode=script --wignore"
 export CMD_PREFIX=""
-export HOST="::1"
+export HOST=$(hostname --fqdn)
 export VALGRIND="valgrind --input-fd=3 --quiet --error-exitcode=2 \
         --leak-check=full --suppressions=$DIR/tests/util/valgrind.suppressions"
 
