@@ -470,9 +470,10 @@ head (glfs_t *fs)
     }
     int n = 10;
     int i =0;
-    while(i<size || n>0){
+    while(i<size && n>0){
         if(data[i]=='\n')
             n--;
+        i++;
     }
     char *buff = (char*) malloc(sizeof(char)*(size+1));
     for(int j=0;j<i;++j)
