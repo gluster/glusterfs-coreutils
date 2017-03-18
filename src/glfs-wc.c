@@ -62,6 +62,58 @@ static struct option const long_options[] =
         {NULL, no_argument, NULL, 0}
 };
 
+
+static int gluster_wc(glfs_fd_t *fd){
+
+        char buffer[BUFSIZE];
+        size_t num_read = 0;
+        size_t num_word = 0;
+        size_t num_newline = 0;
+        size_t ret = 0;
+        size_t total_bytes = 0;
+        size_t total_newline = 0;
+        size_t total_word = 0;
+        size_t num_check;
+        int inside_word = 0;  // for dealing with multiple whitespaces
+
+        while (true) {
+                num_read = glfs_read (fd, buffer, BUFSIZE, 0);
+                if (num_read == -1) {
+                        goto out;
+                }
+
+                if (num_read == 0) {
+                        goto out;
+                }
+                num_word = 0;
+                num_newline = 0;
+                for(num_check=0;num_check<num_read;num_check++){
+                        if(buffer[num_check]=='\n')
+                                num_newline++;
+                        if(buffer[num_check]==' '||buffer[num_check]=='\t'||buffer[num_check]=='\n'){
+                                inside_word = 0;
+                        }else{
+                                inside_word = 1;
+                                num_word++;
+                        }
+                }
+
+                total_bytes+=num_read;
+                total_word+=num_word;
+                total_newline+=num_newline;
+                
+        }
+
+err:
+        ret = -1;
+out:
+
+
+        printf("%d %d %d\n",total_newline,total_word,total_bytes);
+
+        return ret;
+}
+
 static int
 gluster_get (glfs_t *fs, const char *filename) {
         glfs_fd_t *fd = NULL;
@@ -80,8 +132,8 @@ gluster_get (glfs_t *fs, const char *filename) {
                 goto out;
         }
 
-        if ((ret = gluster_read (fd, STDOUT_FILENO)) == -1) {
-                error (0, errno, "write error");
+        if ((ret = gluster_wc (fd)) == -1) {
+                error (0, errno, "read error");
                 goto out;
         }
 
@@ -98,6 +150,7 @@ out:
 
         return ret;
 }
+
 
 static void
 usage ()
