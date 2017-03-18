@@ -451,7 +451,8 @@ head (glfs_t *fs)
     }
 
     size = (long long) statbuf.st_size;
-
+    //printf("%lld",size);
+    /*
     switch (state->mode) {
         case BYTES:
             ret = head_bytes (fd, &statbuf);
@@ -462,9 +463,9 @@ head (glfs_t *fs)
         default:
             error (0, 0, "unknown error");
             goto err;
-    }
+    }*/
     char *data = (char *) malloc(sizeof(char)*size);
-    ret = glfs_read(fd,(void*)data,size,0);
+    ret = glfs_read(fd,data,size,0);
     if (ret == -1) {
         goto err;
     }
