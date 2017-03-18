@@ -66,7 +66,7 @@ static int
 gluster_touch (glfs_t *fs, const char *filename) {
         glfs_fd_t *fd = NULL;
         int ret = -1;
-        fd = gllfs_create( fs, filename, 0, 0644);
+        fd = glfs_creat( fs, filename, 0, 0644);
         ret = 0;
 
 out:
