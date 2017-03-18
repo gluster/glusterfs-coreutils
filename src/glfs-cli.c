@@ -36,6 +36,7 @@
 
 #include "glfs-cli.h"
 #include "glfs-cat.h"
+#include "glfs-chmod.h"
 #include "glfs-cp.h"
 #include "glfs-cli-commands.h"
 #include "glfs-flock.h"
@@ -65,6 +66,7 @@ shell_usage ()
 {
         printf ("The following commands are supported:\n"
                 "* cat\n"
+                "* chmod\n"
                 "* connect\n"
                 "* cp\n"
                 "* disconnect\n"
@@ -93,6 +95,7 @@ static struct cmd const cmds[] =
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
         { .alias = "gfmv", .name = "mv", .execute = not_implemented },
+        { .alias = "gfchmod", .name = "chmod", .execute = do_chmod },
         { .alias = "gfwc", .name = "mv", .execute = do_wc },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },

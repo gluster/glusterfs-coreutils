@@ -6,6 +6,7 @@ EXTRA_DIST = m4/gnulib-cache.m4
 
 install-exec-local:
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfcat
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfchmod
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfcp
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfls
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfmkdir
@@ -27,7 +28,7 @@ prep:	dist
 	cp glusterfs-coreutils.spec build/rpmbuild/SPECS
 
 uninstall-local:
-	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gfrm gfstat gftail gfwc gfhead
+	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gfrm gfstat gftail gfwc gfhead gfchmod
 
 clean-local:
 	rm -rf build rpmbuild *.rpm

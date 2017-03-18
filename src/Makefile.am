@@ -4,6 +4,7 @@ LDADD = $(top_builddir)/lib/libgnu.a
 all-local:
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfcat
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfcp
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfchmod
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfls
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfmkdir
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfwc
@@ -17,6 +18,7 @@ bin_PROGRAMS = 	$(top_builddir)/build/bin/gfcli \
 
 EXTRA_DIST = glfs-cat.h \
 	     glfs-cp.h \
+	     glfs-chmod.h \
 	     glfs-cli-commands.h \
 	     glfs-cli.h \
 	     glfs-flock.h \
@@ -33,6 +35,7 @@ EXTRA_DIST = glfs-cat.h \
 __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-cli-commands.c \
 					  glfs-cat.c \
+					  glfs-chmod.c \
 					  glfs-cp.c \
 					  glfs-flock.c \
 					  glfs-ls.c \
