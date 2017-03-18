@@ -2,7 +2,7 @@
  * A utility to read a file from a remote Gluster volume and stream it to
  * stdout.
  *
- * Copyright (C) 2015 Facebook Inc.
+ * Copyright (C) 2017 Redhat Inc.
  *
  *      This program is free software: you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ static struct option const long_options[] =
 };
 
 
-static int gluster_wc(glfs_fd_t *fd){
+static int gluster_wc(glfs_fd_t *fd,const char* filename){
 
         char buffer[BUFSIZE];
         size_t num_read = 0;
@@ -92,7 +92,7 @@ static int gluster_wc(glfs_fd_t *fd){
                                 num_newline++;
                         if(buffer[num_check]==' '||buffer[num_check]=='\t'||buffer[num_check]=='\n'){
                                 inside_word = 0;
-                        }else{
+                        }else if(inside_word==0){
                                 inside_word = 1;
                                 num_word++;
                         }
@@ -108,8 +108,7 @@ err:
         ret = -1;
 out:
 
-
-        printf("%d %d %d\n",total_newline,total_word,total_bytes);
+        printf("%d %d %d %s\n",total_newline,total_word,total_bytes,filename+1);
 
         return ret;
 }
@@ -132,7 +131,7 @@ gluster_get (glfs_t *fs, const char *filename) {
                 goto out;
         }
 
-        if ((ret = gluster_wc (fd)) == -1) {
+        if ((ret = gluster_wc (fd,filename)) == -1) {
                 error (0, errno, "read error");
                 goto out;
         }

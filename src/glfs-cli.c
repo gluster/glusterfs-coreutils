@@ -90,6 +90,7 @@ static struct cmd const cmds[] =
         { .name = "help", .execute = shell_usage },
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
+        { .alias = "gfmv", .name = "mv", .execute = not_implemented },
         { .alias = "gfwc", .name = "mv", .execute = do_wc },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
