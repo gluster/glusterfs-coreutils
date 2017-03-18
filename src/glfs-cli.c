@@ -45,6 +45,7 @@
 #include "glfs-stat.h"
 #include "glfs-tail.h"
 #include "glfs-util.h"
+#include "glfs-touch.h"
 
 #define AUTHORS "Written by Craig Cabrey."
 
@@ -78,7 +79,7 @@ shell_usage ()
         return 0;
 }
 
-#define NUM_CMDS 13
+#define NUM_CMDS 14
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -93,7 +94,8 @@ static struct cmd const cmds[] =
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
-        { .name = "flock", .execute = do_flock }
+        { .name = "flock", .execute = do_flock },
+        { .alias = "gftouch", .name = "touch", .execute= do_touch }
 };
 
 static const struct cmd*
