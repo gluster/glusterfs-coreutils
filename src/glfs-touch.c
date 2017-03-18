@@ -2,7 +2,7 @@
  * A utility to create a directory on a remote Gluster volume, with the ability
  * to optionally create nested directories as required.
  *
- * Copyright (C) 2015 Facebook Inc.
+ * Copyright (C) 2017 RedHat Inc.
  *
  *      This program is free software: you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
