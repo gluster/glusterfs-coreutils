@@ -470,7 +470,7 @@ head (glfs_t *fs)
     int last_data = ret;
     //ret = gluster_read (fd, STDOUT_FILENO);
     char *data = (char*) malloc(sizeof(char)*last_data);
-    ret = glfs_read(fd,data,last_data);
+    ret = glfs_read(fd,data,last_data,0);
     if (ret == -1) {
         error (0, errno, "write error");
         goto err;

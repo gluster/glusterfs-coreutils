@@ -97,7 +97,7 @@ static struct cmd const cmds[] =
         { .alias = "gftail", .name = "tail", .execute = do_tail },
         { .name = "flock", .execute = do_flock },
         { .alias = "gftouch", .name = "touch", .execute= do_touch },
-        { .alias = "gfhead", .name="head", execute= do_head}
+        { .alias = "gfhead", .name="head", .execute= do_head}
 };
 
 static const struct cmd*
