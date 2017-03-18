@@ -463,24 +463,24 @@ head (glfs_t *fs)
             error (0, 0, "unknown error");
             goto err;
     }
-
+    char *data = (char *) malloc(sizeof(char)*size);
+    ret = glfs_read(fd,(void*)data,size,0);
     if (ret == -1) {
         goto err;
     }
-    int last_data = ret;
-    //ret = gluster_read (fd, STDOUT_FILENO);
-    char *data = (char*) malloc(sizeof(char)*last_data);
-    ret = glfs_read(fd,data,last_data,0);
-    if (ret == -1) {
-        error (0, errno, "write error");
-        goto err;
+    int n = 10;
+    int i =0;
+    while(i<size || n>0){
+        if(data[i]=='\n')
+            n--;
     }
-
-    ret = gluster_read(data,STDOUT_FILEN0);
-    if (ret == -1) {
-        error (0, errno, "write error");
-        goto err;
-    }
+    char *buff = (char*) malloc(sizeof(char)*(size+1));
+    for(int j=0;j<i;++j)
+        buff[j]=data[j];
+    buff[i] = '\0';
+    printf("%s",buff);
+    free(buff);
+    free(data);
 
     goto out;
     err:
