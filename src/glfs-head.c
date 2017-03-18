@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-#include "glfs-tail.h"
+#include "glfs-head.h"
 #include "glfs-util.h"
 
 #include <errno.h>
@@ -49,7 +49,7 @@ int_handler (int value)
         keep_running = 0;
 }
 
-enum tail_mode
+enum head_mode
 {
         BYTES,
         LINES
@@ -62,9 +62,7 @@ enum tail_mode
  * url: Full url used to find the remote file.
  * bytes: Number of bytes to print from the end of the file.
  * debug: Whether to log additional debug information.
- * follow: Whether to continue tailing the output of the file as new data appears.
  * lines: Number of lines to print from the end of the file.
- * sleep_interval: Length of time to sleep in between polling the file for changes.
  * mode: The mode the application is in (bytes vs lines).
  */
 struct state {
@@ -73,10 +71,8 @@ struct state {
         char *url;
         unsigned int bytes;
         bool debug;
-        bool follow;
         unsigned int lines;
-        unsigned long int sleep_interval;
-        enum tail_mode mode;
+        enum head_mode mode;
 };
 
 static struct state *state;
@@ -85,12 +81,10 @@ static struct option const long_options[] =
 {
         {"bytes", required_argument, NULL, 'c'},
         {"debug", no_argument, NULL, 'd'},
-        {"follow", no_argument, NULL, 'f'},
         {"help", no_argument, NULL, 'x'},
         {"lines", required_argument, NULL, 'n'},
         {"xlator-option", required_argument, NULL, 'o'},
         {"port", required_argument, NULL, 'p'},
-        {"sleep-internal", required_argument, NULL, 's'},
         {"version", no_argument, NULL, 'v'},
         {NULL, no_argument, NULL, 0}
 };
@@ -103,29 +97,22 @@ usage ()
 {
         printf ("Usage: %s [OPTION]... URL\n"
                 "Print the first 10 lines (default) of the file to standard output.\n\n"
-                "  -c, --bytes=K                output the last K bytes\n"
-                "  -f, --follow                 output appended data as the file grows\n"
-                "  -n, --lines=K                output the last K lines, instead of the last 10\n"
+                "  -c, --bytes=K                output the first K bytes\n"
+                "  -n, --lines=K                output the first K lines, instead of the last 10 bytes\n"
                 "  -o, --xlator-option=OPTION   specify a translator option for the\n"
                 "                               connection. Multiple options are supported\n"
                 "                               and take the form xlator.key=value.\n"
                 "  -p, --port=PORT              specify the port on which to connect\n"
-                "  -s, --sleep-internal=N       with -f, sleep for approximately N \n"
-                "                               microseconds (default is 50,000)\n"
                 "      --help     display this help and exit\n"
                 "      --version  output version information and exit\n\n"
                 "Examples:\n"
                 "  gfhead glfs://localhost/groot/file\n"
-                "         Head the last 10 lines of the file /file on the Gluster\n"
+                "         Head the first 10 lines of the file /file on the Gluster\n"
                 "         volume groot on host localhost.\n"
                 "  gfhead -c 100 glfs://localhost/groot/file\n"
-                "         Head the last 100 bytes of the file /file on the Gluster\n"
+                "         Head the first 100 bytes of the file /file on the Gluster\n"
                 "         volume groot on host localhost.\n"
-                "  gfhead -f glfs://localhost/groot/file\n"
-                "         Head the last 10 lines of the file /file on the Gluster\n"
-                "         volume groot on host localhost, following the file\n"
-                "         until an interrupt is received.\n"
-                "  gfcli (localhost/groot)> tail /example\n"
+                "  gfcli (localhost/groot)> head /example\n"
                 "        In the context of a shell with a connection established,\n"
                 "        head the file example on the root of the Gluster volume\n"
                 "        groot on localhost.\n",
@@ -192,9 +179,6 @@ parse_options (int argc, char *argv[], bool has_connection)
                         case 'd':
                                 state->debug = true;
                                 break;
-                        case 'f':
-                                state->follow = true;
-                                break;
                         case 'n':
                                 state->lines = strtoint (optarg);
                                 if (state->lines == -1) {
@@ -221,14 +205,6 @@ parse_options (int argc, char *argv[], bool has_connection)
                                 port = strtoport (optarg);
                                 if (port == 0) {
                                         goto err;
-                                }
-
-                                break;
-                        case 's':
-                                state->sleep_interval = strtoul (optarg, NULL, 10);
-                                if (state->sleep_interval == 0 || errno == ERANGE) {
-                                        error (0, 0, "invalid sleep interval: \"%s\"", optarg);
-                                        goto out;
                                 }
 
                                 break;
@@ -299,11 +275,9 @@ init_state ()
 
         state->bytes = 0;
         state->debug = false;
-        state->follow = false;
         state->gluster_url = NULL;
         state->lines = 10;
         state->mode = LINES;
-        state->sleep_interval = 500000;
         state->url = NULL;
         state->xlator_options = NULL;
 
@@ -315,111 +289,109 @@ out:
  * Sets the offset of the fd object based on the number of bytes.
  */
 static int
-tail_bytes (glfs_fd_t *fd, struct stat *statbuf)
+head_lines (glfs_fd_t *fd)
 {
-        int ret;
-        long long size = (long long) statbuf->st_size;
-        long long offset = size - state->bytes;
+        char buffer[BUFSIZE];
+        size_t num_read = 0;
+        size_t num_written = 0;
+        size_t ret = 0;
+        size_t total_written = 0;
+        int dst = STDOUT_FILENO;
+        unsigned long lines = state->lines;
+        size_t lines_remaining = lines;
+        size_t bytes_to_write = 0;
+        size_t loop_chars = 0;
+        size_t lines_written = 0;
+        size_t lines_writing = 0;
 
-        if (offset < 0) {
-                offset = 0;
+        while (true) {
+                num_read = glfs_read (fd, buffer, BUFSIZE, 0);
+                if (num_read == -1) {
+                        goto out;
+                }
+
+                if (num_read == 0) {
+                        goto out;
+                }
+
+                for (num_written = 0; num_written < num_read;) {
+                        bytes_to_write = num_read - num_written;
+                        lines_writing = 0;
+                        for(loop_chars=0;loop_chars<bytes_to_write;loop_chars++){
+                                if(buffer[num_written+loop_chars]=='\n'){
+                                        lines_writing++;
+                                        if(lines_written+lines_writing==lines){
+                                                bytes_to_write = loop_chars+1;
+                                                break;
+                                        }
+                                }
+                        }
+
+                        ret = write (dst,
+                                     &buffer[num_written],
+                                     bytes_to_write );
+                        if (ret != bytes_to_write) {
+                                goto err;
+                        }
+
+                        num_written += ret;
+                        total_written += ret;
+                        lines_written +=lines_writing;
+                        if(lines_written==lines)
+                                goto out;
+                }
+                if(lines_written==lines)
+                        goto out;
         }
 
-        ret = glfs_lseek (fd, offset, SEEK_SET);
-        if (ret == -1) {
-                error (0, errno, "seek error");
-        }
-
+err:
+        ret = -1;
+out:
         return ret;
 }
 
-/**
- * Sets the offset of the fd object based on the number of newlines.
- */
+
 static int
-tail_lines (glfs_fd_t *fd, struct stat *statbuf)
+head_bytes (glfs_fd_t *fd)
 {
-        int ret = 0;
-        int newline_count = 0;
-        ssize_t num_read;
         char buffer[BUFSIZE];
-        long long offset;
-        long long size = (long long) statbuf->st_size;
-
-        offset = size - BUFSIZE;
-        if (offset < 0) {
-                offset = 0;
-        }
-
-        if (state->lines == 0) {
-                offset = size;
-                goto finished;
-        }
+        size_t num_read = 0;
+        size_t num_written = 0;
+        size_t ret = 0;
+        size_t total_written = 0;
+        int dst = STDOUT_FILENO;
+        unsigned long bytes = state->bytes;
+        size_t bytes_remaining = bytes;
+        size_t bytes_to_write = 0;
 
         while (true) {
-                ret = glfs_lseek (fd, offset, SEEK_SET);
-                if (ret == -1) {
-                        error (0, errno, "seek error");
-                        goto err;
-                }
-
-                num_read = glfs_read (fd, &buffer, BUFSIZE, 0);
+                num_read = glfs_read (fd, buffer, BUFSIZE, 0);
                 if (num_read == -1) {
-                        error (0, errno, "read error");
-                        goto err;
+                        goto out;
                 }
 
-                for (int i = num_read - 1; i >= 0; i--) {
-                        if (buffer[i] == '\n') {
-                                newline_count++;
+                if (num_read == 0) {
+                        goto out;
+                }
+
+                for (num_written = 0; num_written < num_read && bytes_remaining>0;) {
+                        bytes_remaining = bytes - total_written;
+                        bytes_to_write = bytes_remaining;
+                        if(num_read - num_written < bytes_to_write)
+                                bytes_to_write = num_read - num_written;
+                        ret = write (dst,
+                                     &buffer[num_written],
+                                     bytes_to_write);
+                        if (ret != bytes_to_write) {
+                                goto err;
                         }
 
-                        if (newline_count == (state->lines + 1)) {
-                                offset += i + 1;
-                                goto finished;
-                        }
+                        num_written += ret;
+                        total_written += ret;
                 }
-
-                if ((offset - BUFSIZE) < 0) {
-                        offset -= num_read;
-                        break;
-                } else {
-                        offset -= BUFSIZE;
-                }
+                if(bytes_remaining<=0)
+                        goto out;
         }
-
-        num_read = glfs_read (fd, &buffer, BUFSIZE, 0);
-        if (num_read == -1) {
-                error (0, errno, "read error");
-                goto err;
-        }
-
-        for (int i = num_read - 1; i >= 0; i--) {
-                if (buffer[i] == '\n') {
-                        newline_count++;
-                }
-
-                if (newline_count == (state->lines + 1)) {
-                        offset += i + 1;
-                        goto finished;
-                }
-        }
-
-        if (newline_count < state->lines) {
-                offset = 0;
-        }
-
-        if (offset < 0) {
-                offset = 0;
-        }
-
-finished:
-        ret = glfs_lseek (fd, offset, SEEK_SET);
-        if (ret == -1) {
-                error (0, errno, "seek error");
-        }
-
-        goto out;
 
 err:
         ret = -1;
@@ -428,18 +400,11 @@ out:
 }
 
 static int
-tail (glfs_t *fs)
+head (glfs_t *fs)
 {
         glfs_fd_t *fd = NULL;
         int ret;
-        struct stat statbuf;
         long long size;
-
-        ret = glfs_stat (fs, state->gluster_url->path, &statbuf);
-        if (ret == -1) {
-                error (0, errno, "cannot open `%s' for reading", state->url);
-                goto err;
-        }
 
         fd = glfs_open (fs, state->gluster_url->path, O_RDONLY);
         if (fd == NULL) {
@@ -447,14 +412,12 @@ tail (glfs_t *fs)
                 goto err;
         }
 
-        size = (long long) statbuf.st_size;
-
         switch (state->mode) {
                 case BYTES:
-                        ret = tail_bytes (fd, &statbuf);
+                        ret = head_bytes (fd);
                         break;
                 case LINES:
-                        ret = tail_lines (fd, &statbuf);
+                        ret = head_lines (fd);
                         break;
                 default:
                         error (0, 0, "unknown error");
@@ -469,39 +432,6 @@ tail (glfs_t *fs)
         if (ret == -1) {
                 error (0, errno, "write error");
                 goto err;
-        }
-
-        if (state->follow) {
-                // Use our SIGINT handler to break out of follow functionality
-                signal (SIGINT, int_handler);
-
-                while (keep_running) {
-                        usleep (state->sleep_interval);
-
-                        ret = glfs_stat (fs, state->gluster_url->path, &statbuf);
-                        if (ret == -1) {
-                                error (0, errno, "cannot open `%s' for reading", state->url);
-                                goto err;
-                        }
-
-                        if (statbuf.st_size == size) {
-                                continue;
-                        }
-
-                        if (statbuf.st_size < size) {
-                                error (0, 0, "file truncated: %s",
-                                                state->gluster_url->path);
-                                size = statbuf.st_size;
-                                glfs_lseek (fd, 0, SEEK_SET);
-                        }
-
-                        ret = gluster_read (fd, STDOUT_FILENO);
-                        if (ret == -1) {
-                                error (0, errno, "read error: %s",
-                                                state->gluster_url->path);
-                                goto err;
-                        }
-                }
         }
 
         goto out;
@@ -549,7 +479,7 @@ do_head_without_context ()
                 }
         }
 
-        ret = tail (fs);
+        ret = head (fs);
 
 out:
         if (fs) {
@@ -581,7 +511,7 @@ do_head (struct cli_context *ctx)
                         goto out;
                 }
 
-                ret = tail (ctx->fs);
+                ret = head (ctx->fs);
         } else {
                 ret = parse_options (argc, argv, false);
                 if (ret == -1) {
