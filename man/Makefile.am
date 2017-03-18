@@ -23,6 +23,10 @@ gfmkdir.1: $(top_builddir)/build/bin/gfmkdir
 	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
 		$(top_builddir)/build/bin/$* && mv $@-t $@
 
+gftouch.1: $(top_builddir)/build/bin/gftouch
+	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
+		$(top_builddir)/build/bin/$* && mv $@-t $@
+
 gfput.1: $(top_builddir)/build/bin/gfput
 	$(HELP2MAN) --output=$@-t $(top_builddir)/build/bin/$* \
 		&& mv $@-t $@

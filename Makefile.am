@@ -9,6 +9,7 @@ install-exec-local:
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfcp
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfls
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfmkdir
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftouch
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfrm
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfstat
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftail
@@ -25,7 +26,7 @@ prep:	dist
 	cp glusterfs-coreutils.spec build/rpmbuild/SPECS
 
 uninstall-local:
-	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gfmv gfrm gfstat gftail
+	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gftouch gfmv gfrm gfstat gftail
 
 clean-local:
 	rm -rf build rpmbuild *.rpm

@@ -41,12 +41,13 @@
 #include "glfs-flock.h"
 #include "glfs-ls.h"
 #include "glfs-mkdir.h"
+#include "glfs-touch.h"
 #include "glfs-rm.h"
 #include "glfs-stat.h"
 #include "glfs-tail.h"
 #include "glfs-util.h"
 
-#define AUTHORS "Written by Craig Cabrey."
+#define AUTHORS "Written by Craig Cabrey, Moonblade"
 
 extern bool debug;
 
@@ -69,6 +70,7 @@ shell_usage ()
                 "* help\n"
                 "* ls\n"
                 "* mkdir\n"
+                "* touch\n"
                 "* quit\n"
                 "* rm\n"
                 "* stat\n"
@@ -78,7 +80,7 @@ shell_usage ()
         return 0;
 }
 
-#define NUM_CMDS 13
+#define NUM_CMDS 14
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -88,6 +90,7 @@ static struct cmd const cmds[] =
         { .name = "help", .execute = shell_usage },
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
+        { .alias = "gftouch", .name = "touch", .execute = do_touch },
         { .alias = "gfmv", .name = "mv", .execute = not_implemented },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
