@@ -23,6 +23,10 @@ gfmkdir.1: $(top_builddir)/build/bin/gfmkdir
 	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
 		$(top_builddir)/build/bin/$* && mv $@-t $@
 
+gfwc.1: $(top_builddir)/build/bin/gfwc
+	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
+		$(top_builddir)/build/bin/$* && mv $@-t $@
+
 gfput.1: $(top_builddir)/build/bin/gfput
 	$(HELP2MAN) --output=$@-t $(top_builddir)/build/bin/$* \
 		&& mv $@-t $@
@@ -47,7 +51,8 @@ man1_MANS = gfcat.1 \
 	    gfput.1 \
 	    gfrm.1 \
 	    gfstat.1 \
-	    gftail.1
+	    gftail.1 \
+	    gfwc.1
 
 EXTRA_DIST = common_seealso.h2m
 
