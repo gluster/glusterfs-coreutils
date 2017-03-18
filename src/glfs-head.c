@@ -479,7 +479,7 @@ head (glfs_t *fs)
     char *buff = (char*) malloc(sizeof(char)*(size+1));
     for(int j=0;j<i;++j)
         buff[j]=data[j];
-    buff[i] = '\0';
+    buff[i+1] = '\0';
     printf("%s",buff);
     free(buff);
     free(data);
