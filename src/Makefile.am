@@ -6,6 +6,7 @@ all-local:
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfcp
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfls
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfmkdir
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfwc
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfrm
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfstat
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftail
@@ -20,6 +21,7 @@ EXTRA_DIST = glfs-cat.h \
 	     glfs-flock.h \
 	     glfs-ls.h \
 	     glfs-mkdir.h \
+	     glfs-wc.h \
 	     glfs-rm.h \
 	     glfs-stat.h \
 	     glfs-stat-util.h \
@@ -33,6 +35,7 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-flock.c \
 					  glfs-ls.c \
 					  glfs-mkdir.c \
+					  glfs-wc.c \
 					  glfs-rm.c \
 					  glfs-stat.c \
 					  glfs-stat-util.c \
