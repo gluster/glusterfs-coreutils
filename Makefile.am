@@ -13,6 +13,7 @@ install-exec-local:
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfstat
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftail
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftouch
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfhead
 
 rpms:	prep
 	QA_RPATHS=17 rpmbuild --define '_topdir $(abs_top_builddir)/build/rpmbuild' \
