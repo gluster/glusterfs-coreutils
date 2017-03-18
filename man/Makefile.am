@@ -39,6 +39,10 @@ gfstat.1: $(top_builddir)/build/bin/gfstat
 	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
 		$(top_builddir)/build/bin/$* && mv $@-t $@
 
+gfhead.1: $(top_builddir)/build/bin/gfhead
+	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
+		$(top_builddir)/build/bin/$* && mv $@-t $@
+
 gftail.1: $(top_builddir)/build/bin/gftail
 	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
 		$(top_builddir)/build/bin/$* && mv $@-t $@
@@ -51,6 +55,7 @@ man1_MANS = gfcat.1 \
 	    gfput.1 \
 	    gfrm.1 \
 	    gfstat.1 \
+	    gfhead.1 \
 	    gftail.1 \
 	    gfwc.1
 
