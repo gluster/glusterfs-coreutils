@@ -125,11 +125,59 @@ gluster_chmod (glfs_t *fs, const char *filename) {
                     }
                 }
             }
+            char buff[4] = {num[0]+'0',num[1]+'0',num[2]+'0','\0'};
+            printf("\n%s",buff);
+            numeric_mode = strtol(buff,NULL,8);
+            numeric_mode |= current_mode;
         }
-        char buff[4] = {num[0]+'0',num[1]+'0',num[2]+'0','\0'};
-        printf("\n%s",buff);
-        numeric_mode = strtol(buff,NULL,8);
-        numeric_mode |= current_mode;
+        if(mode[1]=='-'){
+            for(int i=2; i<size;++i){
+                if(mode[0]=='a'){
+                    if(mode[i]=='x'){
+                        num[0] &= ~1;
+                        num[1] &= ~1;
+                        num[2] &= ~1;
+                    }
+                    else if(mode[i]=='r'){
+                        num[0] = num[0] & ~(1 <<2);
+                        num[1] = num[1] & ~(1 <<2);
+                        num[2] = num[2] & ~(1 <<2);
+                    }
+                    else if(mode[i]=='w'){
+                        num[0] = num[0] & ~(1 <<1);
+                        num[1] = num[1] & ~(1 <<1);
+                        num[2] = num[2] & ~(1 <<1);
+                    }
+                }
+                else if(mode[0]=='u'){
+                    if(mode[i]=='x'){
+                        num[0] &= ~1;
+                    }
+                    else if(mode[i]=='r'){
+                        num[0] = num[1] & ~(1 <<2);
+                    }
+                    else if(mode[i]=='w'){
+                        num[0] = num[0] & ~(1 <<1);
+                    }
+                }
+                else if(mode[0]=='g'){
+                    if(mode[i]=='x'){
+                        num[1] &= ~1 ;
+                    }
+                    else if(mode[i]=='r'){
+                        num[1] = num[1] & ~(1 <<2);
+                    }
+                    else if(mode[i]=='w'){
+                        num[1] = num[1] & ~(1<<1);
+                    }
+                }
+            }
+            char buff[4] = {num[0]+'0',num[1]+'0',num[2]+'0','\0'};
+            printf("\n%s",buff);
+            numeric_mode = strtol(buff,NULL,8);
+            numeric_mode &= current_mode;
+        }
+
     }
 
 
