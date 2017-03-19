@@ -43,14 +43,15 @@
  * gluster_url: Struct of the parsed url supplied by the user.
  * url: Full url used to find the remote file (supplied by user).
  * debug: Whether to log additional debug information.
- * parents: Whether all parent directories in the path are created.
+ * recursive: Whether to apply chmod recursively.
  */
 struct state {
         struct gluster_url *gluster_url;
         struct xlator_option *xlator_options;
         char *url;
         bool debug;
-        bool parents;
+        bool recursive;
+        char *mode;
 };
 
 static struct state *state;
@@ -127,7 +128,7 @@ parse_options (int argc, char *argv[], bool has_connection)
 
                                 break;
                         case 'r':
-                                state->parents = true;
+                                state->recursive = true;
                                 break;
                         case 'v':
                                 printf ("%s (%s) %s\n%s\n%s\n%s\n",
@@ -148,12 +149,17 @@ parse_options (int argc, char *argv[], bool has_connection)
                 }
         }
 
-        if ((argc - option_index) < 2) {
+        if ((argc - option_index) < 3) {
                 error (0, 0, "missing operand");
                 goto err;
         } else {
                 state->url = strdup (argv[argc - 1]);
+                state->mode = strdup (argv[argc - 2]);
                 if (state->url == NULL) {
+                        error (0, errno, "strdup");
+                        goto out;
+                }
+                if (state->mode == NULL) {
                         error (0, errno, "strdup");
                         goto out;
                 }
@@ -212,8 +218,9 @@ init_state ()
 
         state->debug = false;
         state->gluster_url = NULL;
-        state->parents = false;
         state->url = NULL;
+        state->recursive = 0;
+        state->mode = NULL;
         state->xlator_options = NULL;
 
 out:
@@ -221,19 +228,33 @@ out:
 }
 
 static int
-mkdir_with_fs (glfs_t *fs)
+chmod_with_fs (glfs_t *fs)
 {
         int ret;
-        mode_t mode = get_default_dir_mode_perm ();
 
-        if (state->parents) {
-                ret = gluster_create_path (fs, state->gluster_url->path, mode);
-        } else {
-                ret = glfs_mkdir (fs, state->gluster_url->path, mode);
+        mode_t mode = 0;
+
+        size_t octal = 0;
+        size_t decimal = 0;
+
+        if(mode!=NULL){
+                octal = atoi(state->mode);
+
+                while(octal!=0){
+                        decimal = decimal*10 + octal%10;
+                        octal = octal / 10;
+                }
+                while(decimal!=0){
+                        octal = octal*8 + decimal%10;
+                        decimal = decimal / 10;
+                }
+                mode = octal;
         }
 
+        ret = glfs_chmod(fs,state->gluster_url->path,mode);
+
         if (ret == -1) {
-                error (0, errno, "cannot create directory `%s'", state->url);
+                error (0, errno, "cannot change permissions `%s'", state->url);
                 goto out;
         }
 
@@ -242,7 +263,7 @@ out:
 }
 
 static int
-mkdir_without_context ()
+chmod_without_context ()
 {
         glfs_t *fs = NULL;
         int ret = -1;
@@ -268,7 +289,7 @@ mkdir_without_context ()
                 }
         }
 
-        ret = mkdir_with_fs (fs);
+        ret = chmod_with_fs (fs);
 
 out:
         if (fs) {
@@ -299,7 +320,7 @@ do_chmod (struct cli_context *ctx)
                         goto out;
                 }
 
-                ret = mkdir_with_fs (ctx->fs);
+                ret = chmod_with_fs (ctx->fs);
         } else {
                 ret = parse_options (argc, argv, false);
                 switch (ret) {
@@ -310,13 +331,14 @@ do_chmod (struct cli_context *ctx)
                                 goto out;
                 }
 
-                ret = mkdir_without_context ();
+                ret = chmod_without_context ();
         }
 
 out:
         if (state) {
                 gluster_url_free (state->gluster_url);
                 free (state->url);
+                free (state->mode);
         }
 
         free (state);
