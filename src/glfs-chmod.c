@@ -68,19 +68,21 @@ gluster_chmod (glfs_t *fs, const char *filename) {
     glfs_fd_t *fd = NULL;
     int ret = -1;
 
-    char &mode = state->mode;
+    char *mode = state->mode;
     int size;
     int numeric_mode = 0;
-    for(size=0;mode[size]!='0';++size);
+    printf("%s\n",mode);
+    for(size=0;mode[size]!='\0';++size);
     if(size==3){
-        numeric_mode = (mode[0]-'0' * 100) + (mode[1]-'0' *10) + (mode[2] - '0');
+        numeric_mode = ((mode[0]-'0') * 100) + ((mode[1]-'0') *10) + (mode[2] - '0');
+        printf("%s|%d",mode,numeric_mode);
     }
     else{
 
     }
 
 
-    ret = glfs_chmod(fs,filename,numeric_mode);
+    ret = glfs_chmod(fs,filename,777);
 
     ret = 0;
 
@@ -217,7 +219,7 @@ chmod_without_context ()
         }
     }
 
-    ret = gluster_get (fs, state->gluster_url->path);
+    ret = gluster_chmod (fs, state->gluster_url->path);
     if (ret == -1) {
         goto out;
     }

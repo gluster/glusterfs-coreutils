@@ -11,6 +11,7 @@ all-local:
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftail
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftouch
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfhead
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfchmod
 
 bin_PROGRAMS = 	$(top_builddir)/build/bin/gfcli \
 		$(top_builddir)/build/bin/gfput
@@ -28,7 +29,8 @@ EXTRA_DIST = glfs-cat.h \
 	     glfs-tail.h \
 	     glfs-util.h \
 	     glfs-touch.h \
-		 glfs-head.h
+		 glfs-head.h \
+		 glfs-chmod.h
 
 __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-cli-commands.c \
@@ -43,7 +45,8 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-tail.c \
 					  glfs-util.c \
 					  glfs-touch.c \
-					  glfs-head.c
+					  glfs-head.c \
+					  glfs-chmod.c
 
 __top_builddir__build_bin_gfcli_CFLAGS = $(GLFS_CFLAGS)
 __top_builddir__build_bin_gfcli_LDADD = $(LDADD) $(GLFS_LIBS) -lreadline
