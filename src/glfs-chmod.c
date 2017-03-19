@@ -82,8 +82,9 @@ gluster_chmod (glfs_t *fs, const char *filename) {
         numeric_mode = strtol(mode,NULL,8);
     }
     else{
-        int num[3]={0,0,0};
+        
         if(mode[1]=='+'){
+            int num[3] = {0,0,0};
             for(int i=2; i<size;++i){
                 if(mode[0]=='a'){
                     if(mode[i]=='x'){
@@ -131,6 +132,7 @@ gluster_chmod (glfs_t *fs, const char *filename) {
             numeric_mode |= current_mode;
         }
         if(mode[1]=='-'){
+            int num[3] = {1,1,1};
             for(int i=2; i<size;++i){
                 if(mode[0]=='a'){
                     if(mode[i]=='x'){
