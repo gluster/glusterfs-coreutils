@@ -59,8 +59,9 @@ static struct state *state;
 static struct option const long_options[] =
 {
         {"debug", no_argument, NULL, 'd'},
-        {"help", no_argument, NULL, 'x'},
+        {"help", no_argument, NULL, 'h'},
         {"port", required_argument, NULL, 'p'},
+        {"recursive", no_argument, NULL, 'R'},
         {"version", no_argument, NULL, 'v'},
         {"xlator-option", required_argument, NULL, 'o'},
         {NULL, no_argument, NULL, 0}
@@ -96,7 +97,7 @@ parse_options (int argc, char *argv[], bool has_connection)
         // Reset getopt since other utilities may have called it already.
         optind = 0;
         while (true) {
-                opt = getopt_long (argc, argv, "do:p:rv", long_options,
+                opt = getopt_long (argc, argv, "do:p:rwx:Rv", long_options,
                                    &option_index);
 
                 if (opt == -1) {
@@ -127,7 +128,8 @@ parse_options (int argc, char *argv[], bool has_connection)
                                 }
 
                                 break;
-                        case 'r':
+                        case 'r': case 'w': case 'x': break;
+                        case 'R':
                                 state->recursive = true;
                                 break;
                         case 'v':
@@ -140,7 +142,7 @@ parse_options (int argc, char *argv[], bool has_connection)
                                         AUTHORS);
                                 ret = -2;
                                 goto out;
-                        case 'x':
+                        case 'h':
                                 usage ();
                                 ret = -2;
                                 goto out;
@@ -236,8 +238,9 @@ chmod_with_fs (glfs_t *fs)
 
         size_t octal = 0;
         size_t decimal = 0;
+        struct stat *local_stat;
 
-        if(mode!=NULL){
+        if(state->mode[0]>='0'&&state->mode[0]<='7'){
                 octal = atoi(state->mode);
 
                 while(octal!=0){
@@ -249,12 +252,55 @@ chmod_with_fs (glfs_t *fs)
                         decimal = decimal / 10;
                 }
                 mode = octal;
+        }else{
+                local_stat =(struct stat*) malloc(sizeof(struct stat));
+                ret = glfs_stat(fs,state->gluster_url->path,local_stat);
+                if(ret == -1)
+                        goto err;
+                mode = local_stat->st_mode;
+                if(state->mode[0]=='+'){
+                        switch (state->mode[1]) {
+                                case 'r':
+                                        mode |= S_IRUSR; break;
+                                case 'w':
+                                        mode |= S_IWUSR; break;
+                                case 'x':
+                                        mode |= S_IXUSR; break;
+                                default:
+                                        ret = -2;
+                                        goto err;
+                        }
+                }else if(state->mode[0]=='-'){
+                        switch (state->mode[1]) {
+                                case 'r':
+                                        mode &= ~S_IRUSR; break;
+                                case 'w':
+                                        mode &= ~S_IWUSR; break;
+                                case 'x':
+                                        mode &= ~S_IXUSR; break;
+                                default:
+                                        ret = -2;
+                                        goto err;
+
+                        }
+                }else{
+                        ret = -2;
+                        goto err;
+                }
         }
+
 
         ret = glfs_chmod(fs,state->gluster_url->path,mode);
 
+err:
+
         if (ret == -1) {
                 error (0, errno, "cannot change permissions `%s'", state->url);
+                goto out;
+        }
+
+        if (ret == -2) {
+                error (0, errno, "Invalid permission mode`%s'", state->url);
                 goto out;
         }
 
