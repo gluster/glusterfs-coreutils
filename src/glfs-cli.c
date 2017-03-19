@@ -36,6 +36,7 @@
 
 #include "glfs-cli.h"
 #include "glfs-cat.h"
+#include "glfs-clear.h"
 #include "glfs-cp.h"
 #include "glfs-cli-commands.h"
 #include "glfs-flock.h"
@@ -73,12 +74,13 @@ shell_usage ()
                 "* rm\n"
                 "* stat\n"
                 "* tail\n"
+                "* clear\n"
                 "* flock\n");
 
         return 0;
 }
 
-#define NUM_CMDS 13
+#define NUM_CMDS 14
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -93,6 +95,7 @@ static struct cmd const cmds[] =
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
+        { .name = "clear", .execute = do_clear },
         { .name = "flock", .execute = do_flock }
 };
 

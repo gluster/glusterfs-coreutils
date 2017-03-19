@@ -9,6 +9,7 @@ all-local:
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfrm
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfstat
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftail
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfclear
 
 bin_PROGRAMS = 	$(top_builddir)/build/bin/gfcli \
 		$(top_builddir)/build/bin/gfput
@@ -24,6 +25,7 @@ EXTRA_DIST = glfs-cat.h \
 	     glfs-stat.h \
 	     glfs-stat-util.h \
 	     glfs-tail.h \
+	     glfs-clear.h \
 	     glfs-util.h
 
 __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
@@ -37,6 +39,7 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-stat.c \
 					  glfs-stat-util.c \
 					  glfs-tail.c \
+					  glfs-clear.c \
 					  glfs-util.c
 
 __top_builddir__build_bin_gfcli_CFLAGS = $(GLFS_CFLAGS)
