@@ -36,11 +36,14 @@
 
 #include "glfs-cli.h"
 #include "glfs-cat.h"
+#include "glfs-chmod.h"
 #include "glfs-cp.h"
 #include "glfs-cli-commands.h"
 #include "glfs-flock.h"
+#include "glfs-head.h"
 #include "glfs-ls.h"
 #include "glfs-mkdir.h"
+#include "glfs-wc.h"
 #include "glfs-rm.h"
 #include "glfs-stat.h"
 #include "glfs-tail.h"
@@ -63,22 +66,25 @@ shell_usage ()
 {
         printf ("The following commands are supported:\n"
                 "* cat\n"
+                "* chmod\n"
                 "* connect\n"
                 "* cp\n"
                 "* disconnect\n"
                 "* help\n"
                 "* ls\n"
                 "* mkdir\n"
+                "* wc\n"
                 "* quit\n"
                 "* rm\n"
                 "* stat\n"
+                "* head\n"
                 "* tail\n"
                 "* flock\n");
 
         return 0;
 }
 
-#define NUM_CMDS 13
+#define NUM_CMDS 14
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -89,9 +95,12 @@ static struct cmd const cmds[] =
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
         { .alias = "gfmv", .name = "mv", .execute = not_implemented },
+        { .alias = "gfchmod", .name = "chmod", .execute = do_chmod },
+        { .alias = "gfwc", .name = "mv", .execute = do_wc },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
+        { .alias = "gfhead", .name = "head", .execute = do_head },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
         { .name = "flock", .execute = do_flock }
 };
