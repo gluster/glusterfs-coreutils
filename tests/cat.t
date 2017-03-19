@@ -65,22 +65,22 @@ teardown() {
 @test "uri with host and volume" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME: Is a directory" ]]
 }
 
 @test "uri with host and volume with trailing slash" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME/"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME/: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME/: Is a directory" ]]
 }
 
 @test "uri with host, volume, and empty path" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME//"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME//: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME//: Is a directory" ]]
 }
 
 @test "cat small file" {
@@ -104,20 +104,20 @@ teardown() {
 @test "cat directory" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR: Is a directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/$TEST_CAT_DIR: Is a directory" ]]
 }
 
 @test "cat with host that does not exist" {
         run $CMD "glfs://host/volume/file"
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://host/volume/file: Transport endpoint is not connected" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://host/volume/file: Transport endpoint is not connected" ]]
 }
 
 @test "cat file that does not exist" {
         run $CMD "glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file";
 
-        [ "$status" -eq 1 ]
-        [ "$output" == "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file: No such file or directory" ]
+        [ "$status" -eq 2 ]
+        [[ "$output" =~ "gfcat: glfs://$HOST/$GLUSTER_VOLUME$ROOT_DIR/no_such_file: No such file or directory" ]]
 }

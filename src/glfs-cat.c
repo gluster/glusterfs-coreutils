@@ -55,7 +55,7 @@ static struct state *state;
 static struct option const long_options[] =
 {
         {"debug", no_argument, NULL, 'd'},
-        {"help", no_argument, NULL, 'x'},
+        {"help", no_argument, NULL, 'h'},
         {"port", required_argument, NULL, 'p'},
         {"version", no_argument, NULL, 'v'},
         {"xlator-option", required_argument, NULL, 'o'},
@@ -174,7 +174,7 @@ parse_options (int argc, char *argv[], bool has_connection)
                                         AUTHORS);
                                 ret = -2;
                                 goto out;
-                        case 'x':
+                        case 'h':
                                 usage ();
                                 ret = -2;
                                 goto out;
