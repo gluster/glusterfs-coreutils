@@ -81,7 +81,9 @@ usage ()
                 "  chmod 777 glfs://localhost/groot/directory\n"
                 "          Grant all permissions to all users for directory\n"
                 "  chmod 444 glfs://localhost/groot/directory/subdirectory\n"
-                "          Grant readonly permission to all users for /directory/subdirectory\n",
+                "          Grant readonly permission to all users for /directory/subdirectory\n"
+                "  chmod +w glfs://localhost/groot/directory\n"
+                "          Grant read permission owner for directory\n",
                 program_invocation_name);
 }
 
@@ -258,30 +260,37 @@ chmod_with_fs (glfs_t *fs)
                 if(ret == -1)
                         goto err;
                 mode = local_stat->st_mode;
+                int mode_length = strlen(state->mode);
                 if(state->mode[0]=='+'){
-                        switch (state->mode[1]) {
-                                case 'r':
-                                        mode |= S_IRUSR; break;
-                                case 'w':
-                                        mode |= S_IWUSR; break;
-                                case 'x':
-                                        mode |= S_IXUSR; break;
-                                default:
-                                        ret = -2;
-                                        goto err;
+                        for(int mode_loop=1;mode_loop<mode_length;mode_loop++){
+                                char modeChar = state->mode[mode_loop];
+                                switch (modeChar) {
+                                        case 'r':
+                                                mode |= S_IRUSR; break;
+                                        case 'w':
+                                                mode |= S_IWUSR; break;
+                                        case 'x':
+                                                mode |= S_IXUSR; break;
+                                        default:
+                                                ret = -2;
+                                                goto err;
+                                }
                         }
                 }else if(state->mode[0]=='-'){
-                        switch (state->mode[1]) {
-                                case 'r':
-                                        mode &= ~S_IRUSR; break;
-                                case 'w':
-                                        mode &= ~S_IWUSR; break;
-                                case 'x':
-                                        mode &= ~S_IXUSR; break;
-                                default:
-                                        ret = -2;
-                                        goto err;
+                        for(int mode_loop=1;mode_loop<mode_length;mode_loop++){
+                                char modeChar = state->mode[mode_loop];
+                                switch (modeChar) {
+                                        case 'r':
+                                                mode &= ~S_IRUSR; break;
+                                        case 'w':
+                                                mode &= ~S_IWUSR; break;
+                                        case 'x':
+                                                mode &= ~S_IXUSR; break;
+                                        default:
+                                                ret = -2;
+                                                goto err;
 
+                                }
                         }
                 }else{
                         ret = -2;
