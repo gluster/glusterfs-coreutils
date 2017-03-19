@@ -12,6 +12,7 @@ install-exec-local:
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfrm
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfstat
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftail
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfmv
 
 rpms:	prep
 	QA_RPATHS=17 rpmbuild --define '_topdir $(abs_top_builddir)/build/rpmbuild' \
@@ -25,7 +26,7 @@ prep:	dist
 	cp glusterfs-coreutils.spec build/rpmbuild/SPECS
 
 uninstall-local:
-	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gfmv gfrm gfstat gftail
+	cd $(DESTDIR)$(bindir) && rm -f gfcat gfcp gfls gfmkdir gfmv gfrm gfstat gftail gftouch
 
 clean-local:
 	rm -rf build rpmbuild *.rpm
