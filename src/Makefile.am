@@ -6,9 +6,11 @@ all-local:
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfcp
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfls
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfmkdir
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftouch
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfrm
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gfstat
 	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftail
+	$(LN_S) -f gfcli $(top_builddir)/build/bin/gftruncate
 
 bin_PROGRAMS = 	$(top_builddir)/build/bin/gfcli \
 		$(top_builddir)/build/bin/gfput
@@ -20,11 +22,13 @@ EXTRA_DIST = glfs-cat.h \
 	     glfs-flock.h \
 	     glfs-ls.h \
 	     glfs-mkdir.h \
+	     glfs-touch.h \
 	     glfs-rm.h \
 	     glfs-stat.h \
 	     glfs-stat-util.h \
 	     glfs-tail.h \
-	     glfs-util.h
+	     glfs-util.h \
+	     glfs-truncate.h
 
 __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-cli-commands.c \
@@ -33,11 +37,13 @@ __top_builddir__build_bin_gfcli_SOURCES = glfs-cli.c \
 					  glfs-flock.c \
 					  glfs-ls.c \
 					  glfs-mkdir.c \
+					  glfs-touch.c \
 					  glfs-rm.c \
 					  glfs-stat.c \
 					  glfs-stat-util.c \
 					  glfs-tail.c \
-					  glfs-util.c
+					  glfs-util.c \
+					  glfs-truncate.c
 
 __top_builddir__build_bin_gfcli_CFLAGS = $(GLFS_CFLAGS)
 __top_builddir__build_bin_gfcli_LDADD = $(LDADD) $(GLFS_LIBS) -lreadline
