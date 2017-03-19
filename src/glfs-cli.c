@@ -41,13 +41,14 @@
 #include "glfs-flock.h"
 #include "glfs-ls.h"
 #include "glfs-mkdir.h"
+#include "glfs-truncate.h"
 #include "glfs-touch.h"
 #include "glfs-rm.h"
 #include "glfs-stat.h"
 #include "glfs-tail.h"
 #include "glfs-util.h"
 
-#define AUTHORS "Written by Craig Cabrey, Moonblade"
+#define AUTHORS "Written by Craig Cabrey."
 
 extern bool debug;
 
@@ -75,12 +76,13 @@ shell_usage ()
                 "* rm\n"
                 "* stat\n"
                 "* tail\n"
-                "* flock\n");
+                "* flock\n"
+                "* truncate\n");
 
         return 0;
 }
 
-#define NUM_CMDS 14
+#define NUM_CMDS 15
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -96,7 +98,8 @@ static struct cmd const cmds[] =
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
-        { .name = "flock", .execute = do_flock }
+        { .name = "flock", .execute = do_flock },
+        { .alias = "gftruncate", .name = "truncate", .execute = do_truncate }
 };
 
 static const struct cmd*

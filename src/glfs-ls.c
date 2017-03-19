@@ -1,7 +1,7 @@
 /**
  * A utility to list files and directories from a remote Gluster volume.
  *
- * Copyright (C) 2015 Facebook Inc.
+ * Copyright (C) 2017 RedHat Inc.
  *
  *      This program is free software: you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 #include "glfs-stat-util.h"
 #include "human.h"
 
-#define AUTHORS "Written by Craig Cabrey. Edited by Moonblade"
+#define AUTHORS "Written by Craig Cabrey."
 
 /**
  * Used to store the state of the program, including user supplied options.
