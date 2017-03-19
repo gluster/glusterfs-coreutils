@@ -71,17 +71,15 @@ gluster_chmod (glfs_t *fs, const char *filename) {
     ret = glfs_stat (fs, state->gluster_url->path, &statbuf);
     if (ret == -1) {
         error (0, errno, "cannot open `%s' for reading", state->url);
-        goto err;
+        goto out;
     }
-    int current_mode = statbuf.st_mode;
+    mode_t current_mode = statbuf.st_mode;
     char *mode = state->mode;
     int size;
-    int numeric_mode = current_mode;
-    printf("%s\n",mode);
+    mode_t numeric_mode = current_mode;
     for(size=0;mode[size]!='\0';++size);
-    if(size==3 && mode[0] >'0' && mode[o] < '9'){
-        numeric_mode = ((mode[0]-'0') * 100) + ((mode[1]-'0') *10) + (mode[2] - '0');
-        printf("%s|%d",mode,numeric_mode);
+    if(size==3 && mode[0] >='0' && mode[0] <= '9'){
+        numeric_mode = strtol(mode,NULL,8);//((mode[0]-'0') * 100) + ((mode[1]-'0') *10) + (mode[2] - '0');
     }
     else{
 
@@ -95,6 +93,7 @@ gluster_chmod (glfs_t *fs, const char *filename) {
     }
 
 
+    printf("%d",numeric_mode);
     ret = glfs_chmod(fs,filename,numeric_mode);
 
     ret = 0;
