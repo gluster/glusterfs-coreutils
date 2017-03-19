@@ -79,17 +79,55 @@ gluster_chmod (glfs_t *fs, const char *filename) {
     mode_t numeric_mode = current_mode;
     for(size=0;mode[size]!='\0';++size);
     if(size==3 && mode[0] >='0' && mode[0] <= '9'){
-        numeric_mode = strtol(mode,NULL,8);//((mode[0]-'0') * 100) + ((mode[1]-'0') *10) + (mode[2] - '0');
+        numeric_mode = strtol(mode,NULL,8);
     }
     else{
-
+        int num[3];
         if(mode[1]=='+'){
             for(int i=2; i<size;++i){
                 if(mode[0]=='a'){
-
+                    if(mode[i]="x"){
+                        num[0] |= 1;
+                        num[1] |= 1;
+                        num[2] |= 1;
+                    }
+                    else if(mode[i]=='r'){
+                        num[0] = num[1] | 1 <<2;
+                        num[1] = num[1] | 1 <<2;
+                        num[2] = num[1] | 1 <<2;
+                    }
+                    else if(mode[i]=='w'){
+                        num[0] = num[0] | 1 <<1;
+                        num[1] = num[1] | 1 <<1;
+                        num[2] = num[2] | 1 <<1;
+                    }
+                }
+                else if(mode[0]=='u'){
+                    if(mode[i]=='x'){
+                        num[0] |= 1;
+                    }
+                    else if(mode[i]=='r'){
+                        num[0] = num[1] | 1 <<2;
+                    }
+                    else if(mode[i]=='w'){
+                        num[0] = num[0] | 1 <<1;
+                    }
+                }
+                else if(mode[0]=='g'){
+                    if(mode[i]=='x'){
+                        num[1] |= 1 ;
+                    }
+                    else if(mode[i]=='r'){
+                        num[1] = num[1] | 1 <<2;
+                    }
+                    else if(mode[i]=='w'){
+                        num[1] = num[1] | 1<<1;
+                    }
                 }
             }
         }
+        char buff[3] = {num[0]+'0',num[1]+'0',num[2]+'0'};
+        numeric_mode = strtol(buff,NULL,8);
     }
 
 
