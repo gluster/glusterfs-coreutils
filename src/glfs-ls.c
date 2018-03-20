@@ -432,7 +432,7 @@ ls (glfs_t *fs, char *path)
 {
         char *pattern = NULL;
         char *real_path = NULL;
-        int ret;
+        int ret = -1;
         struct stat statbuf;
 
         /**
@@ -459,7 +459,6 @@ ls (glfs_t *fs, char *path)
         if (pattern && strchr (pattern, '*') == NULL) {
                 if (glfs_stat (fs, path, &statbuf)) {
                         error (0, errno, "failed to access %s", state->url);
-                        ret = -1;
                         goto out;
                 }
 
