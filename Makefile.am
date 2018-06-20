@@ -12,6 +12,8 @@ install-exec-local:
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfrm
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfstat
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gftail
+	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfclear
+  $(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfrmdir
 	$(LN_S) -f gfcli $(DESTDIR)$(bindir)/gfmv
 
 rpms:	prep

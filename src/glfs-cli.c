@@ -46,6 +46,7 @@
 #include "glfs-stat.h"
 #include "glfs-tail.h"
 #include "glfs-util.h"
+#include "glfs-rmdir.h"
 #include "glfs-mv.h"
 
 #define AUTHORS "Written by Craig Cabrey."
@@ -96,9 +97,11 @@ static struct cmd const cmds[] =
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
+        { .name = "flock", .execute = do_flock },
+	      {.alias = "gfrmdir", .name = "rmdir", .execute = do_rmdir},
         { .name = "clear", .execute = do_clear },
         { .name = "flock", .execute = do_flock },
-        { .alias = "gfmv", .name = "mv", .execute = do_mv}
+        { .alias = "gfmv", .name = "mv", .execute = do_mv }
 };
 
 static const struct cmd*
