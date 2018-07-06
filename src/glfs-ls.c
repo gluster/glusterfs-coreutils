@@ -1,7 +1,7 @@
 /**
  * A utility to list files and directories from a remote Gluster volume.
  *
- * Copyright (C) 2015 Facebook Inc.
+ * Copyright (C) 2017 RedHat Inc.
  *
  *      This program is free software: you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -108,6 +108,8 @@ usage ()
                 "       volume groot on host localhost using the long listing format.\n"
                 "  gfcli (localhost/groot)> ls /\n"
                 "       List the contents of the root of the connected Gluster volume.\n",
+                "  gfcli (localhost/groot)> ls\n"
+                "       List the contents of the current directory of the connected Gluster volume.\n",
                 program_invocation_name);
 }
 
@@ -180,18 +182,25 @@ parse_options (int argc, char *argv[], bool has_connection)
                 }
         }
 
-        if ((argc - option_index) < 2) {
-                error (0, 0, "missing operand");
-                goto err;
-        } else {
+        if(has_connection){
+                if ((argc-option_index)<2){
+                        const char *curPath=".";
+                        state->url = strdup (curPath);
+                }
+                else {
+                        state->url = strdup (argv[argc - 1]);
+                }
+                ret = 0;
+                goto out;
+        }
+        else{
+                if ((argc-option_index)<2){
+                        error(0, 0, "missing operand");
+                        goto err;
+                }
                 state->url = strdup (argv[argc - 1]);
                 if (state->url == NULL) {
                         error (0, errno, "strdup");
-                        goto out;
-                }
-
-                if (has_connection) {
-                        ret = 0;
                         goto out;
                 }
 
@@ -202,9 +211,8 @@ parse_options (int argc, char *argv[], bool has_connection)
                 }
 
                 state->gluster_url->port = port;
+                goto out;
         }
-
-        goto out;
 
 err:
         error (0, 0, "Try --help for more information.");

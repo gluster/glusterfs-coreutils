@@ -42,6 +42,8 @@
 #include "glfs-flock.h"
 #include "glfs-ls.h"
 #include "glfs-mkdir.h"
+#include "glfs-truncate.h"
+#include "glfs-touch.h"
 #include "glfs-rm.h"
 #include "glfs-stat.h"
 #include "glfs-tail.h"
@@ -72,10 +74,12 @@ shell_usage ()
                 "* help\n"
                 "* ls\n"
                 "* mkdir\n"
+                "* touch\n"
                 "* quit\n"
                 "* rm\n"
                 "* stat\n"
                 "* tail\n"
+                "* truncate\n"
                 "* clear\n"
                 "* flock\n"
                 "* mv\n");
@@ -83,7 +87,6 @@ shell_usage ()
         return 0;
 }
 
-#define NUM_CMDS 14
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -93,16 +96,19 @@ static struct cmd const cmds[] =
         { .name = "help", .execute = shell_usage },
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
+        { .alias = "gftouch", .name = "touch", .execute = do_touch },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
         { .name = "flock", .execute = do_flock },
+        { .alias = "gftruncate", .name = "truncate", .execute = do_truncate }
 	      {.alias = "gfrmdir", .name = "rmdir", .execute = do_rmdir},
         { .name = "clear", .execute = do_clear },
         { .name = "flock", .execute = do_flock },
         { .alias = "gfmv", .name = "mv", .execute = do_mv }
 };
+#define NUM_CMDS sizeof cmds / sizeof cmds[0]
 
 static const struct cmd*
 get_cmd (char *name)
