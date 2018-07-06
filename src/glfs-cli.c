@@ -102,8 +102,8 @@ static struct cmd const cmds[] =
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
         { .name = "flock", .execute = do_flock },
-        { .alias = "gftruncate", .name = "truncate", .execute = do_truncate }
-	      {.alias = "gfrmdir", .name = "rmdir", .execute = do_rmdir},
+        { .alias = "gftruncate", .name = "truncate", .execute = do_truncate },
+	{.alias = "gfrmdir", .name = "rmdir", .execute = do_rmdir},
         { .name = "clear", .execute = do_clear },
         { .name = "flock", .execute = do_flock },
         { .alias = "gfmv", .name = "mv", .execute = do_mv }
