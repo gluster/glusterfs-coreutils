@@ -48,6 +48,9 @@ gftouch.1: $(top_builddir)/build/bin/gftouch
 	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
 		$(top_builddir)/build/bin/$* && mv $@-t $@
 
+gfrmdir.1: $(top_builddir)/build/bin/gfrmdir
+        $(HELP2MAN) --output=$@-t -I common_seealso.h2m \
+                $(top_builddir)/build/bin/$* && mv $@-t $@
 
 man1_MANS = gfcat.1 \
 	    gfcli.1 \
@@ -59,7 +62,8 @@ man1_MANS = gfcat.1 \
 	    gfstat.1 \
 	    gftail.1 \
 	    gftruncate.1 \
-	    gftouch.1 
+	    gftouch.1 \
+	    gfrmdir.1
 
 EXTRA_DIST = common_seealso.h2m
 

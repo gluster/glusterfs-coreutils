@@ -36,6 +36,7 @@
 
 #include "glfs-cli.h"
 #include "glfs-cat.h"
+#include "glfs-clear.h"
 #include "glfs-cp.h"
 #include "glfs-cli-commands.h"
 #include "glfs-flock.h"
@@ -47,6 +48,8 @@
 #include "glfs-stat.h"
 #include "glfs-tail.h"
 #include "glfs-util.h"
+#include "glfs-rmdir.h"
+#include "glfs-mv.h"
 
 #define AUTHORS "Written by Craig Cabrey."
 
@@ -76,13 +79,14 @@ shell_usage ()
                 "* rm\n"
                 "* stat\n"
                 "* tail\n"
+                "* truncate\n"
+                "* clear\n"
                 "* flock\n"
-                "* truncate\n");
+                "* mv\n");
 
         return 0;
 }
 
-#define NUM_CMDS 15
 static struct cmd const cmds[] =
 {
         { .name = "connect", .execute = cli_connect },
@@ -93,14 +97,18 @@ static struct cmd const cmds[] =
         { .alias = "gfls", .name = "ls", .execute = do_ls },
         { .alias = "gfmkdir", .name = "mkdir", .execute = do_mkdir },
         { .alias = "gftouch", .name = "touch", .execute = do_touch },
-        { .alias = "gfmv", .name = "mv", .execute = not_implemented },
         { .name = "quit", .execute = handle_quit },
         { .alias = "gfrm", .name = "rm", .execute = do_rm },
         { .alias = "gfstat", .name = "stat", .execute = do_stat },
         { .alias = "gftail", .name = "tail", .execute = do_tail },
         { .name = "flock", .execute = do_flock },
         { .alias = "gftruncate", .name = "truncate", .execute = do_truncate }
+	      {.alias = "gfrmdir", .name = "rmdir", .execute = do_rmdir},
+        { .name = "clear", .execute = do_clear },
+        { .name = "flock", .execute = do_flock },
+        { .alias = "gfmv", .name = "mv", .execute = do_mv }
 };
+#define NUM_CMDS sizeof cmds / sizeof cmds[0]
 
 static const struct cmd*
 get_cmd (char *name)

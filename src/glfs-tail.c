@@ -567,7 +567,7 @@ do_tail (struct cli_context *ctx)
 {
         int argc = ctx->argc;
         char **argv = ctx->argv;
-        int ret;
+        int ret = -1;
 
         state = init_state ();
         if (state == NULL) {
