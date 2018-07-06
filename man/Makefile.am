@@ -49,8 +49,8 @@ gftouch.1: $(top_builddir)/build/bin/gftouch
 		$(top_builddir)/build/bin/$* && mv $@-t $@
 
 gfrmdir.1: $(top_builddir)/build/bin/gfrmdir
-        $(HELP2MAN) --output=$@-t -I common_seealso.h2m \
-                $(top_builddir)/build/bin/$* && mv $@-t $@
+	$(HELP2MAN) --output=$@-t -I common_seealso.h2m \
+		$(top_builddir)/build/bin/$* && mv $@-t $@
 
 man1_MANS = gfcat.1 \
 	    gfcli.1 \
