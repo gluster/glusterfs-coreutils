@@ -256,7 +256,11 @@ gluster_put (glfs_t *fs, struct state *state)
                         goto out;
                 }
         } else {
+#ifdef HAVE_GLFS_7_6
+                ret = glfs_ftruncate (fd, 0, NULL, NULL);
+#else
                 ret = glfs_ftruncate (fd, 0);
+#endif
                 if (ret == -1) {
                         error (0, errno, "truncate error: %s", filename);
                         goto out;
