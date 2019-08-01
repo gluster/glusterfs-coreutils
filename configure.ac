@@ -35,7 +35,8 @@ AC_PROG_EGREP
 
 # Dependencies
 AC_CHECK_HEADERS([readline/readline.h readline/history.h],,[AC_MSG_ERROR([cannot find readline headers])])
-PKG_CHECK_MODULES([GLFS], [glusterfs-api >= 3],,[AC_MSG_ERROR([cannot find glusterfs api headers])])
+PKG_CHECK_MODULES([GLFS], [glusterfs-api >= 3],[],[AC_MSG_ERROR([cannot find glusterfs api headers])])
+PKG_CHECK_MODULES([GLFS_7_6],[glusterfs-api >= 7.6],[AC_DEFINE(HAVE_GLFS_7_6,1,[found glusterfs api version >= 7.6])], [no])
 
 AC_CHECK_PROG([HAVE_HELP2MAN],[help2man],[yes],[no])
 AM_CONDITIONAL([HAVE_HELP2MAN], [test "x$HAVE_HELP2MAN" = xyes])

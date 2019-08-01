@@ -567,7 +567,11 @@ local_to_remote (const char *local_path, const char *remote_path, glfs_t *fs)
                 goto out;
         }
 
+#ifdef HAVE_GLFS_7_6
+        ret = glfs_ftruncate (remote_fd, 0, NULL, NULL);
+#else
         ret = glfs_ftruncate (remote_fd, 0);
+#endif
         if (ret == -1) {
                 error (0, errno, "failed to truncate %s", full_path);
                 goto out;
