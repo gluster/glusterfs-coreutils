@@ -297,6 +297,7 @@ out:
         return state;
 }
 
+int
 gluster_get (glfs_t *fs, const char *filename) {
         glfs_fd_t *fd = NULL;
         int ret = -1;
@@ -327,7 +328,7 @@ out:
         return ret;
 }
 
-
+int
 truncate_without_context ()
 {
         glfs_t *fs = NULL;
