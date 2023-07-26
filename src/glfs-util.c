@@ -22,6 +22,7 @@
 
 #include "glfs-util.h"
 
+#include <sys/stat.h>
 #include <assert.h>
 #include <errno.h>
 #include <error.h>
