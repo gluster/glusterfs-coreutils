@@ -16,6 +16,8 @@
  *
  */
 
+#include <config.h>
+
 #include "glfs-stat-util.h"
 
 char const *
