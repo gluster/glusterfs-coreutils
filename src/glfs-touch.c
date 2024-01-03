@@ -226,10 +226,12 @@ touch_with_fs (glfs_t *fs)
 {
         int ret;
         mode_t mode = get_default_dir_mode_perm ();
+        glfs_fd_t *fd;
 
-        ret = glfs_creat(fs, state->gluster_url->path, 0, mode);
 
-        if (ret == -1) {
+        fd = glfs_creat(fs, state->gluster_url->path, 0, mode);
+
+        if (fd == NULL || glfs_close (fd) == -1) {
                 error (0, errno, "cannot create file `%s'", state->url);
                 goto out;
         }
