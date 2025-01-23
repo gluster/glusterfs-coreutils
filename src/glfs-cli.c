@@ -64,7 +64,7 @@ struct cmd {
 };
 
 static int
-shell_usage ()
+shell_usage (struct cli_context *ctx)
 {
         printf ("The following commands are supported:\n"
                 "* cat\n"

@@ -19,9 +19,10 @@
 #ifndef GLFS_CLEAR_H
 #define GLFS_CLEAR_H
 
+#include "glfs-cli.h"
 #include "glfs-clear.h"
 
 int
-do_clear();
+do_clear(struct cli_context *ctx);
 
 #endif
