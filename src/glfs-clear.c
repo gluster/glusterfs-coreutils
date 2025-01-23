@@ -78,7 +78,7 @@ usage ()
 }
 
 int
-do_clear()
+do_clear(struct cli_context *ctx)
 {
         int ret = 0;
         printf("\033[2J\033[1;1H");
